@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState } from "../projectState"
-import { changeSelectionRender, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from "."
+import { clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from "."
 import { getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays } from "../utils"
 import { getHoverSelectionRectState } from "../hover-selection-rect"
 import { getSharedStage } from "../App"
@@ -8,6 +8,7 @@ import _ from "lodash"
 import { getElementById } from "../util"
 import { Transform } from "konva/lib/Util"
 import { getCursor } from "../cursor"
+import { elementUpdater } from "./element-updater"
 
 export const useSelectionBoxEvent = () => {
     const selection = useProjectState('selection')
@@ -138,8 +139,14 @@ export const useSelectionBoxEvent = () => {
             height = oldElement.height;
         }
 
-        // 应用最终变换并更新元素
-        updateElement(element, oldTr, tr, width, height);
+        // 使用统一的元素更新管理器
+        elementUpdater.updateSingleElement({
+            element,
+            oldTransform: oldTr,
+            transform: tr,
+            width,
+            height
+        });
     };
 
     // 辅助函数：检查操作是否被允许
@@ -338,20 +345,6 @@ export const useSelectionBoxEvent = () => {
         }
     };
 
-    // 辅助函数：更新元素属性
-    const updateElement = (element: any, oldTr: Transform, tr: Transform, width: number, height: number) => {
-        const newTr = oldTr.multiply(tr);
-        const result = newTr.decompose();
-
-        element.x = result.x;
-        element.y = result.y;
-        element.width = width;
-        element.height = height;
-        element.rotation = result.rotation;
-
-        changeSelectionRender();
-    };
-
     const handleMultipleResize = () => {
         const oldBoxNode = mouseRef.current.oldBoxNode
         const { hotId, currentStageX, currentStageY, stageX, stageY } = mouseRef.current;
@@ -365,20 +358,17 @@ export const useSelectionBoxEvent = () => {
         const finalDeltaX = constrainedScales.deltaX;
         const finalDeltaY = constrainedScales.deltaY;
 
-        // 批量更新所有元素
-        for (const element of mouseRef.current.elements) {
-            const oldElement = mouseRef.current.oldElements.find(e => e.id === element.id)
-            const currentBox = mouseRef.current.oldBoxNodes.find((item: any) => item.selection.includes(oldElement.id))
-            if (!currentBox) continue;
-
-            // 计算当前框的偏移量
-            const { offsetX, offsetY } = calculateBoxOffset(hotId, currentBox, deltaX, deltaY, finalDeltaX, finalDeltaY);
-
-            // 更新元素位置和尺寸
-            updateElementTransform(element, oldElement, currentBox, finalDeltaX, finalDeltaY, offsetX, offsetY);
-        }
-
-        changeSelectionRender()
+        // 使用统一的元素更新管理器进行批量更新
+        elementUpdater.batchUpdateMultipleTransform(
+            mouseRef.current.elements,
+            mouseRef.current.oldElements,
+            mouseRef.current.oldBoxNodes,
+            finalDeltaX,
+            finalDeltaY,
+            hotId,
+            deltaX,
+            deltaY
+        );
     }
 
     // 计算基础缩放比例
@@ -418,87 +408,6 @@ export const useSelectionBoxEvent = () => {
         }
 
         return { deltaX, deltaY };
-    }
-
-    // 计算框的偏移量
-    const calculateBoxOffset = (
-        hotId: string,
-        currentBox: any,
-        originalDeltaX: number,
-        originalDeltaY: number,
-        finalDeltaX: number,
-        finalDeltaY: number
-    ) => {
-        let offsetX = 0;
-        let offsetY = 0;
-
-        // 计算初始偏移量
-        switch (hotId) {
-            case 'border-left':
-            case 'anchor-top-left':
-            case 'anchor-bottom-left':
-                offsetX = currentBox.width * (1 - originalDeltaX);
-                break;
-        }
-
-        switch (hotId) {
-            case 'border-top':
-            case 'anchor-top-left':
-            case 'anchor-top-right':
-                offsetY = currentBox.height * (1 - originalDeltaY);
-                break;
-        }
-
-        // 如果缩放比例被约束，重新计算偏移量
-        if (finalDeltaX !== originalDeltaX) {
-            switch (hotId) {
-                case 'border-left':
-                case 'anchor-top-left':
-                case 'anchor-bottom-left':
-                    offsetX = currentBox.width * (1 - finalDeltaX);
-                    break;
-            }
-        }
-
-        if (finalDeltaY !== originalDeltaY) {
-            switch (hotId) {
-                case 'border-top':
-                case 'anchor-top-left':
-                case 'anchor-top-right':
-                    offsetY = currentBox.height * (1 - finalDeltaY);
-                    break;
-            }
-        }
-
-        return { offsetX, offsetY };
-    }
-
-    // 更新元素的变换
-    const updateElementTransform = (
-        element: any,
-        oldElement: any,
-        currentBox: any,
-        finalDeltaX: number,
-        finalDeltaY: number,
-        offsetX: number,
-        offsetY: number
-    ) => {
-        // 处理在父框架内的元素
-        if (currentBox.frames[oldElement.id]) {
-            const parentFrame = getElementById(currentBox.frames[oldElement.id])
-            const bx = currentBox.x - parentFrame.x
-            const by = currentBox.y - parentFrame.y
-            element.x = (oldElement.x - bx) * finalDeltaX + bx + offsetX
-            element.y = (oldElement.y - by) * finalDeltaY + by + offsetY
-        } else {
-            // 处理普通元素
-            element.x = (oldElement.x - currentBox.x) * finalDeltaX + currentBox.x + offsetX
-            element.y = (oldElement.y - currentBox.y) * finalDeltaY + currentBox.y + offsetY
-        }
-
-        // 更新尺寸
-        element.width = oldElement.width * finalDeltaX
-        element.height = oldElement.height * finalDeltaY
     }
 
     // 辅助函数：为多元素应用尺寸约束
@@ -563,20 +472,15 @@ export const useSelectionBoxEvent = () => {
         // 检查所有元素的尺寸限制，计算允许的缩放比例
         const finalScale = applyKeepRatioConstraints(scale);
 
-        // 批量更新所有元素
-        for (const element of mouseRef.current.elements) {
-            const oldElement = mouseRef.current.oldElements.find(e => e.id === element.id)
-            const currentBox = mouseRef.current.oldBoxNodes.find((item: any) => item.selection.includes(oldElement.id))
-            if (!currentBox) continue;
-
-            // 计算当前框的等比缩放偏移量
-            const { offsetX, offsetY } = calculateKeepRatioBoxOffset(hotId, currentBox, scale, finalScale);
-
-            // 更新元素位置和尺寸（等比缩放）
-            updateElementKeepRatioTransform(element, oldElement, currentBox, finalScale, offsetX, offsetY);
-        }
-
-        changeSelectionRender()
+        // 使用统一的元素更新管理器进行批量等比更新
+        elementUpdater.batchUpdateKeepRatio(
+            mouseRef.current.elements,
+            mouseRef.current.oldElements,
+            mouseRef.current.oldBoxNodes,
+            finalScale,
+            hotId,
+            scale
+        );
     }
 
     // 计算等比缩放比例
@@ -610,126 +514,6 @@ export const useSelectionBoxEvent = () => {
         }
 
         return scale;
-    }
-
-    // 计算等比缩放的框偏移量
-    const calculateKeepRatioBoxOffset = (
-        hotId: string,
-        currentBox: any,
-        originalScale: number,
-        finalScale: number
-    ) => {
-        let offsetX = 0;
-        let offsetY = 0;
-
-        const newWidth = currentBox.width * originalScale;
-        const newHeight = currentBox.height * originalScale;
-
-        // 计算初始偏移量
-        if (hotId === 'border-right') {
-            // 以左边中心为固定点进行等比缩放
-            offsetX = 0; // 左边固定
-            offsetY = (currentBox.height - newHeight) / 2; // 垂直居中
-        } else if (hotId === 'border-bottom') {
-            // 以上边中心为固定点进行等比缩放
-            offsetX = (currentBox.width - newWidth) / 2; // 水平居中
-            offsetY = 0; // 上边固定
-        } else if (hotId === 'border-left') {
-            // 以右边中心为固定点进行等比缩放
-            offsetX = currentBox.width - newWidth; // 右边固定
-            offsetY = (currentBox.height - newHeight) / 2; // 垂直居中
-        } else if (hotId === 'border-top') {
-            // 以下边中心为固定点进行等比缩放
-            offsetX = (currentBox.width - newWidth) / 2; // 水平居中
-            offsetY = currentBox.height - newHeight; // 下边固定
-        } else if (hotId === 'anchor-top-left') {
-            offsetX = currentBox.width - newWidth;
-            offsetY = currentBox.height - newHeight;
-        } else if (hotId === 'anchor-top-right') {
-            offsetX = 0;
-            offsetY = currentBox.height - newHeight;
-        } else if (hotId === 'anchor-bottom-left') {
-            offsetX = currentBox.width - newWidth;
-            offsetY = 0;
-        } else if (hotId === 'anchor-bottom-right') {
-            offsetX = 0;
-            offsetY = 0;
-        }
-
-        // 如果缩放比例被约束，重新计算偏移量
-        if (finalScale !== originalScale) {
-            const finalNewWidth = currentBox.width * finalScale;
-            const finalNewHeight = currentBox.height * finalScale;
-
-            if (hotId === 'border-right') {
-                offsetX = 0;
-                offsetY = (currentBox.height - finalNewHeight) / 2;
-            } else if (hotId === 'border-bottom') {
-                offsetX = (currentBox.width - finalNewWidth) / 2;
-                offsetY = 0;
-            } else if (hotId === 'border-left') {
-                offsetX = currentBox.width - finalNewWidth;
-                offsetY = (currentBox.height - finalNewHeight) / 2;
-            } else if (hotId === 'border-top') {
-                offsetX = (currentBox.width - finalNewWidth) / 2;
-                offsetY = currentBox.height - finalNewHeight;
-            } else if (hotId === 'anchor-top-left') {
-                offsetX = currentBox.width - finalNewWidth;
-                offsetY = currentBox.height - finalNewHeight;
-            } else if (hotId === 'anchor-top-right') {
-                offsetX = 0;
-                offsetY = currentBox.height - finalNewHeight;
-            } else if (hotId === 'anchor-bottom-left') {
-                offsetX = currentBox.width - finalNewWidth;
-                offsetY = 0;
-            } else if (hotId === 'anchor-bottom-right') {
-                offsetX = 0;
-                offsetY = 0;
-            }
-        }
-
-        return { offsetX, offsetY };
-    }
-
-    // 更新元素的等比缩放变换
-    const updateElementKeepRatioTransform = (
-        element: any,
-        oldElement: any,
-        currentBox: any,
-        finalScale: number,
-        offsetX: number,
-        offsetY: number
-    ) => {
-        // 处理在父框架内的元素
-        if (currentBox.frames[oldElement.id]) {
-            const parentFrame = getElementById(currentBox.frames[oldElement.id])
-            const bx = currentBox.x - parentFrame.x
-            const by = currentBox.y - parentFrame.y
-
-            // 计算元素相对于包围盒的位置
-            const relativeX = oldElement.x - bx;
-            const relativeY = oldElement.y - by;
-
-            // 应用等比缩放
-            element.x = relativeX * finalScale + bx + offsetX;
-            element.y = relativeY * finalScale + by + offsetY;
-        } else {
-            // 处理普通元素
-            // 计算元素相对于包围盒的位置
-            const relativeX = oldElement.x - currentBox.x;
-            const relativeY = oldElement.y - currentBox.y;
-
-            // 应用等比缩放
-            element.x = relativeX * finalScale + currentBox.x + offsetX;
-            element.y = relativeY * finalScale + currentBox.y + offsetY;
-        }
-
-        // 更新尺寸（等比缩放）
-        element.width = oldElement.width * finalScale;
-        element.height = oldElement.height * finalScale;
-
-        // 旋转角度保持不变
-        element.rotation = oldElement.rotation;
     }
 
     // 辅助函数：为等比缩放应用尺寸约束

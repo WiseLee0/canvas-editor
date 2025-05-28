@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react"
 import { getSharedStage } from "../App"
 import { getProjectState } from "../projectState"
-import { changeSelectionRender, getSelectionBoxState } from "../selection-box"
+import { getSelectionBoxState, elementUpdater } from "../selection-box"
 import { getHoverSelectionRectState } from "../hover-selection-rect"
 import _ from "lodash"
-import { getElementById } from "../util"
 import { hitPointerForSelectionBox } from "../utils"
 
 export const useDragBoxEvent = () => {
@@ -55,17 +54,9 @@ export const useDragBoxEvent = () => {
             const [dx, dy] = [mouseRef.current.currentStageX - mouseRef.current.stageX, mouseRef.current.currentStageY - mouseRef.current.stageY]
             const oldElements = mouseRef.current.oldElements
             const boxs = getSelectionBoxState('nodes')
-            if (!boxs?.length) return
-            for (const box of boxs) {
-                for (const elementId of box.selection) {
-                    const oldElement = getElementById(elementId, oldElements)
-                    const element = getElementById(elementId)
-                    if (!oldElement || !element) continue
-                    element.x = oldElement.x + dx
-                    element.y = oldElement.y + dy
-                }
-            }
-            changeSelectionRender()
+            
+            // 使用统一的元素更新管理器
+            elementUpdater.batchUpdatePositions(boxs, oldElements, dx, dy)
         }
 
         window.addEventListener('mousedown', handleMouseDown)
