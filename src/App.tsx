@@ -67,7 +67,7 @@ function App() {
   useDragBoxEvent()
 
   return <div>
-    <div style={{ height: 50, width: '100%', backgroundColor: 'black' }}></div>
+    <div style={{ height: 50, width: '100%', backgroundColor: 'black',background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>
     <Stage width={window.innerWidth} height={window.innerHeight - 50} ref={stageRef} scaleX={scale} scaleY={scale} x={-x} y={-y} >
       <Layer >
         <RenderElements />

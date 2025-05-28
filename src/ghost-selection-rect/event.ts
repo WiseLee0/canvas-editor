@@ -119,8 +119,8 @@ export const useGhostSelectionRectEvent = () => {
             if (y <= 1) {
                 ry = -1
             }
-            if (x > ow) {
-                rx = x - ow
+            if (x > ow - 2) {
+                rx = 2
             }
             if (y > oh - 2) {
                 ry = 2
