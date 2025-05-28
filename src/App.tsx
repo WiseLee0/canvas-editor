@@ -7,6 +7,7 @@ import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "./projectState";
 import { SelectionBoxRects, useSelectionBoxEvent } from "./selection-box";
 import { HoverSelectionRect, useHoverSelectionRectEvent } from "./hover-selection-rect";
+import { useDragBoxEvent } from "./drag-box";
 
 let sharedStageRef = { current: null };
 export const getSharedStage = () => sharedStageRef.current as unknown as Konva.Stage;
@@ -63,6 +64,7 @@ function App() {
   useHoverSelectionRectEvent()
   useSelectionBoxEvent()
   useGhostSelectionRectEvent()
+  useDragBoxEvent()
 
   return <div>
     <div style={{ height: 50, width: '100%', backgroundColor: 'black' }}></div>

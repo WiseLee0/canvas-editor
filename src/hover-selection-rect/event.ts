@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { getProjectState, setProjectState } from "../projectState"
 import { getSharedStage } from "../App"
 import { getSelectionBoxState, setSelectionBoxState } from "../selection-box"
-import { getPointerForElement, getTransform, hitTestRectNodes, isPointInRect } from "../utils"
+import { getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect } from "../utils"
 import { getHoverSelectionRectState, setHoverSelectionRectState } from "."
 import { getGhostSelectionRectState } from "../ghost-selection-rect"
 import { getCursor } from "../cursor"
@@ -10,14 +10,15 @@ export const useHoverSelectionRectEvent = () => {
     const mouseRef = useRef({
         isDown: false,
         isEnoughMove: false,
+        isPointerForBox: false,
+        isSelect: false,
         clientX: 0,
         clientY: 0,
     })
     useEffect(() => {
         const handleMouseDown = (e: MouseEvent) => {
             getHoverNode(e.shiftKey)
-            mouseRef.current.isEnoughMove = true
-            setSelection(e.shiftKey)
+            setSelectionDown(e.shiftKey)
             mouseRef.current.isEnoughMove = false
             mouseRef.current.isDown = true
             mouseRef.current.clientX = e.clientX
@@ -39,7 +40,7 @@ export const useHoverSelectionRectEvent = () => {
         }
 
         const handleMouseUp = (e: MouseEvent) => {
-            setSelection(e.shiftKey)
+            setSelectionUp(e.shiftKey)
             mouseRef.current.isDown = false
             mouseRef.current.isEnoughMove = false
         }
@@ -96,22 +97,7 @@ export const useHoverSelectionRectEvent = () => {
         setHoverSelectionRectState({ node: pointerForElement?.renderNode ?? null })
     }
 
-    // 设置选区元素
-    const setSelection = (isShiftKey: boolean = false) => {
-        const pointerForElement = getPointerForElement()
-        // 点中边框、锚点热区则不进行选区
-        const hotId = getHoverSelectionRectState('hotId')
-
-        if (hotId) return;
-        const boxs = getSelectionBoxState('nodes')
-        if (boxs.length && mouseRef.current.isEnoughMove) {
-            return;
-        }
-
-        if (!pointerForElement) {
-            setProjectState({ selection: [] })
-            return;
-        }
+    const setSelection = (pointerForElement: any, isShiftKey: boolean = false) => {
         const { id, removeIds } = pointerForElement
         const selection = getProjectState('selection')
         if (isShiftKey) {
@@ -127,6 +113,46 @@ export const useHoverSelectionRectEvent = () => {
         } else {
             setProjectState({ selection: [id] })
         }
+    }
+
+    const setSelectionDown = (isShiftKey: boolean = false) => {
+        // 选中框内部
+        const hotId = getHoverSelectionRectState('hotId')
+        const pointerForBox = hitPointerForSelectionBox()
+        mouseRef.current.isPointerForBox = Boolean(pointerForBox)
+        if (pointerForBox || hotId) {
+            return;
+        }
+
+        // 选中框之外
+        const pointerForElement = getPointerForElement()
+        if (!pointerForElement) {
+            setProjectState({ selection: [] })
+            return;
+        }
+
+        setSelection(pointerForElement, isShiftKey)
+    }
+
+    const setSelectionUp = (isShiftKey: boolean = false) => {
+        // 选中框之外
+        const hotId = getHoverSelectionRectState('hotId')
+        const pointerForBox = mouseRef.current.isPointerForBox
+        if (!pointerForBox || hotId) {
+            return;
+        }
+
+        // 选中框内部
+        const pointerForElement = getPointerForElement()
+        if (!pointerForElement && !mouseRef.current.isEnoughMove) {
+            setProjectState({ selection: [] })
+            return;
+        }
+        if (mouseRef.current.isEnoughMove) {
+            return
+        }
+
+        setSelection(pointerForElement, isShiftKey)
     }
 }
 
