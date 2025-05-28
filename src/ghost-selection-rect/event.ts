@@ -4,6 +4,7 @@ import { getGhostSelectionRectState, setGhostSelectionRectState } from ".";
 import { getProjectState, setProjectState } from "../projectState";
 import { hitPointerForSelectionBox, hitTestRectNodes, transformRenderNode } from "../utils";
 import { getHoverSelectionRectState } from "../hover-selection-rect";
+import _ from "lodash";
 interface GhostNode {
     x: number;
     y: number;
@@ -16,7 +17,8 @@ export const useGhostSelectionRectEvent = () => {
         isDown: false,
         stageX: 0,
         stageY: 0,
-        isEnoughMove: false
+        isEnoughMove: false,
+        oldSelection: [] as string[]
     })
     useEffect(() => {
         const stage = getSharedStage()
@@ -58,6 +60,7 @@ export const useGhostSelectionRectEvent = () => {
                 const moveThreshold = 2 / scale
                 if (!mouseRef.current.isEnoughMove && (Math.abs(width) > moveThreshold || Math.abs(height) > moveThreshold)) {
                     mouseRef.current.isEnoughMove = true
+                    mouseRef.current.oldSelection = getProjectState('selection')
                 }
                 if (!mouseRef.current.isEnoughMove) {
                     return
@@ -71,7 +74,7 @@ export const useGhostSelectionRectEvent = () => {
                             height,
                         }
                     })
-                    handleSelection()
+                    handleSelection(e.shiftKey)
                     return;
                 }
                 const [tx, ty] = [cx, cy].map(v => {
@@ -90,15 +93,15 @@ export const useGhostSelectionRectEvent = () => {
                         height,
                     }
                 })
-                handleSelection()
+                handleSelection(e.shiftKey)
                 moveRef.current = requestAnimationFrame(viewportChange)
             }
             moveRef.current = requestAnimationFrame(viewportChange)
         }
 
-        const handleMouseUp = () => {
+        const handleMouseUp = (e: MouseEvent) => {
             if (mouseRef.current.isDown && mouseRef.current.isEnoughMove) {
-                handleSelection()
+                handleSelection(e.shiftKey)
             }
             mouseRef.current.isDown = false
             mouseRef.current.isEnoughMove = false
@@ -128,24 +131,26 @@ export const useGhostSelectionRectEvent = () => {
             return [rx, ry]
         }
 
-        const handleSelection = () => {
+        const handleSelection = (isShiftKey: boolean = false) => {
             const ghostNode = getGhostSelectionRectState('node')
             if (!ghostNode) {
                 setProjectState({ selection: [] })
                 return;
             }
-            hitSelection(ghostNode)
+            hitSelection(ghostNode, isShiftKey)
         }
 
-        const hitSelection = (ghostNode: GhostNode) => {
+        const hitSelection = (ghostNode: GhostNode, isShiftKey: boolean = false) => {
             const elements = getProjectState('elements')
-            const selection = []
+            const selection: string[] = []
+            const removeIds: string[] = []
             for (const element of elements) {
                 const renderNode = transformRenderNode(element)
                 // Frame元素，有特殊逻辑
                 if (element.type === 'frame') {
                     if (isRectContained(getGhostNodeInfo(ghostNode), renderNode)) {
                         selection.push(element.id)
+                        removeIds.push(...element.elements?.map((item: any) => item.id))
                         continue
                     }
                     if (hitTestRectNodes(getGhostNodeInfo(ghostNode), renderNode)) {
@@ -156,6 +161,7 @@ export const useGhostSelectionRectEvent = () => {
                                 const cy = childRenderNode.y + renderNode.y
                                 if (hitTestRectNodes(getGhostNodeInfo(ghostNode), { ...childRenderNode, x: cx, y: cy })) {
                                     selection.push(child.id)
+                                    removeIds.push(element.id)
                                 }
                             }
                         }
@@ -167,7 +173,14 @@ export const useGhostSelectionRectEvent = () => {
                     selection.push(element.id)
                 }
             }
-            setProjectState({ selection })
+
+            if (isShiftKey) {
+                const oldSelection = mouseRef.current.oldSelection.filter(item => !removeIds.includes(item))
+                const symmetricDifference = _.xor(oldSelection, selection)
+                setProjectState({ selection: symmetricDifference })
+            } else {
+                setProjectState({ selection })
+            }
         }
 
         window.addEventListener('mousedown', handleMouseDown)

@@ -19,7 +19,7 @@ export const useDragBoxEvent = () => {
     })
     useEffect(() => {
         const stage = getSharedStage()
-        const handleMouseDown = (e: MouseEvent) => {
+        const handleMouseDown = () => {
             mouseRef.current.isDown = false
             const pos = stage.getRelativePointerPosition()
             const hotId = getHoverSelectionRectState('hotId')

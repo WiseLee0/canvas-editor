@@ -34,11 +34,11 @@ export const _projectState = createWithEqualityFn<ProjectState>()(() => ({
 
 export const {
     useStore: useProjectState,
-    setState: setProjectState,
+    setState: _setProjectState,
     getState: getProjectState,
 } = createStoreUtils<ProjectState>(_projectState);
 
 // DEBUG模式
-// export const setProjectState = (state: Partial<ProjectState>) => {
-//     _setProjectState(state)
-// }
+export const setProjectState = (state: Partial<ProjectState>) => {
+    _setProjectState(state)
+}

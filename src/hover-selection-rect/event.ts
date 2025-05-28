@@ -127,6 +127,7 @@ export const useHoverSelectionRectEvent = () => {
         // 选中框之外
         const pointerForElement = getPointerForElement()
         if (!pointerForElement) {
+            if (isShiftKey) return
             setProjectState({ selection: [] })
             return;
         }
