@@ -5,7 +5,7 @@ import { GhostSelectionRect, useGhostSelectionRectEvent } from "./ghost-selectio
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "./projectState";
-import { SelectionBoxRects, useSelectionBoxEvent } from "./selection-box";
+import { changeSelectionRender, SelectionBoxRects, useSelectionBoxEvent } from "./selection-box";
 import { HoverSelectionRect, useHoverSelectionRectEvent } from "./hover-selection-rect";
 import { useDragBoxEvent } from "./drag-box";
 
@@ -61,13 +61,39 @@ function App() {
       window.removeEventListener('wheel', handleWheel)
     }
   }, [])
+  useEffect(() => {
+    // 清洗数据
+    const elements = getProjectState('elements')
+    if (elements?.length) {
+      for (const element of elements) {
+        if (element.type === 'image' && element.scaleX !== 1) {
+          element.width = element.width * element.scaleX
+          element.height = element.height * element.scaleY
+          element.scaleX = 1
+          element.scaleY = 1
+        }
+        if (element?.elements?.length) {
+          for (const child of element.elements) {
+            if (child.type === 'image' && child.scaleX !== 1) {
+              child.width = child.width * child.scaleX
+              child.height = child.height * child.scaleY
+              child.scaleX = 1
+              child.scaleY = 1
+            }
+          }
+        }
+      }
+      setProjectState({ elements })
+      changeSelectionRender()
+    }
+  }, [])
   useHoverSelectionRectEvent()
   useSelectionBoxEvent()
   useGhostSelectionRectEvent()
   useDragBoxEvent()
 
   return <div>
-    <div style={{ height: 50, width: '100%', backgroundColor: 'black',background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>
+    <div style={{ height: 50, width: '100%', backgroundColor: 'black', background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>
     <Stage width={window.innerWidth} height={window.innerHeight - 50} ref={stageRef} scaleX={scale} scaleY={scale} x={-x} y={-y} >
       <Layer >
         <RenderElements />
