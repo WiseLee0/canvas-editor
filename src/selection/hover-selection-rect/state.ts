@@ -1,5 +1,5 @@
 import { createWithEqualityFn } from "zustand/traditional";
-import { createStoreUtils } from "../util";
+import { createStoreUtils } from "../../util";
 
 interface HoverNode {
     x: number;

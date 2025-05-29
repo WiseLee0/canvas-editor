@@ -1,11 +1,7 @@
 import { useEffect, useRef } from "react"
-import { getProjectState, setProjectState } from "../projectState"
-import { getSharedStage } from "../App"
-import { getSelectionBoxState, setSelectionBoxState } from "../selection-box"
-import { getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect } from "../utils"
-import { getHoverSelectionRectState, setHoverSelectionRectState } from "."
-import { getGhostSelectionRectState } from "../ghost-selection-rect"
-import { getCursor } from "../cursor"
+import { getProjectState, setProjectState } from "../../projectState"
+import { getSharedStage } from "../../App"
+import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect } from ".."
 export const useHoverSelectionRectEvent = () => {
     const mouseRef = useRef({
         isDown: false,

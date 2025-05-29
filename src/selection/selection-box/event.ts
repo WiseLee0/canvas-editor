@@ -1,14 +1,10 @@
 import { useEffect, useRef } from "react"
-import { getProjectState, useProjectState } from "../projectState"
-import { clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from "."
-import { getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays } from "../utils"
-import { getHoverSelectionRectState } from "../hover-selection-rect"
-import { getSharedStage } from "../App"
+import { getProjectState, useProjectState } from "../../projectState"
+import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from ".."
+import { getSharedStage } from "../../App"
 import _ from "lodash"
-import { getElementById } from "../util"
+import { getElementById } from "../../util"
 import { Transform } from "konva/lib/Util"
-import { getCursor } from "../cursor"
-import { elementUpdater } from "./element-updater"
 
 export const useSelectionBoxEvent = () => {
     const selection = useProjectState('selection')

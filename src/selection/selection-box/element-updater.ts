@@ -1,6 +1,6 @@
 import { Transform } from "konva/lib/Util"
-import { getElementById } from "../util"
-import { changeSelectionRender } from "./state/render"
+import { getElementById } from "../../util"
+import { changeSelectionRender } from ".."
 
 // 元素更新类型枚举
 export enum UpdateType {

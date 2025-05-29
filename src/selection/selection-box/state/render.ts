@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { selectionBoxConfig, SelectionBoxConfig } from "..";
 import { createWithEqualityFn } from "zustand/traditional";
-import { createStoreUtils } from "../../util";
+import { createStoreUtils } from "../../../util";
 
 interface Node {
   id: string;

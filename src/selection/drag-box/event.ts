@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react"
-import { getSharedStage } from "../App"
-import { getProjectState } from "../projectState"
-import { getSelectionBoxState, elementUpdater } from "../selection-box"
-import { getHoverSelectionRectState } from "../hover-selection-rect"
+import { getSharedStage } from "../../App"
+import { getProjectState } from "../../projectState"
+import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState } from ".."
 import _ from "lodash"
-import { hitPointerForSelectionBox } from "../utils"
 
 export const useDragBoxEvent = () => {
     const mouseRef = useRef({
@@ -54,7 +52,7 @@ export const useDragBoxEvent = () => {
             const [dx, dy] = [mouseRef.current.currentStageX - mouseRef.current.stageX, mouseRef.current.currentStageY - mouseRef.current.stageY]
             const oldElements = mouseRef.current.oldElements
             const boxs = getSelectionBoxState('nodes')
-            
+
             // 使用统一的元素更新管理器
             elementUpdater.batchUpdatePositions(boxs, oldElements, dx, dy)
         }

@@ -1,6 +1,6 @@
 import { Group, Rect, Text, Image, Ellipse } from "react-konva";
 import { getProjectState, useProjectState } from "./projectState";
-import { useSelectionBoxState } from "./selection-box";
+import { useSelectionBoxState } from "./selection/selection-box";
 import { useState, useEffect } from "react";
 import imageURL from './assets/image.jpeg?url'
 export function RenderElements() {

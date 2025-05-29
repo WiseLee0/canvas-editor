@@ -1,13 +1,13 @@
 import { Layer, Stage } from "react-konva";
 import "./App.css";
 import { RenderElements } from "./render";
-import { GhostSelectionRect, useGhostSelectionRectEvent } from "./ghost-selection-rect";
+import { GhostSelectionRect, useGhostSelectionRectEvent } from "./selection/ghost-selection-rect";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "./projectState";
-import { changeSelectionRender, SelectionBoxRects, useSelectionBoxEvent } from "./selection-box";
-import { HoverSelectionRect, useHoverSelectionRectEvent } from "./hover-selection-rect";
-import { useDragBoxEvent } from "./drag-box";
+import { changeSelectionRender, SelectionBoxRects, useSelectionBoxEvent } from "./selection/selection-box";
+import { HoverSelectionRect, useHoverSelectionRectEvent } from "./selection/hover-selection-rect";
+import { useDragBoxEvent } from "./selection/drag-box";
 
 let sharedStageRef = { current: null };
 export const getSharedStage = () => sharedStageRef.current as unknown as Konva.Stage;

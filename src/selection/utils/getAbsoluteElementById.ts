@@ -1,4 +1,4 @@
-import { getProjectState } from "../projectState"
+import { getProjectState } from "../../projectState"
 import { getTransform } from "./matrix";
 
 export const getAbsoluteElementById = (id: string) => {

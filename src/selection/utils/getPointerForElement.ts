@@ -1,5 +1,5 @@
-import { getSharedStage } from "../App"
-import { getProjectState } from "../projectState"
+import { getSharedStage } from "../../App"
+import { getProjectState } from "../../projectState"
 import { hitTestRectNodes } from "./intersect"
 import { transformRenderNode } from "./transformRenderNode"
 

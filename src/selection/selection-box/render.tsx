@@ -1,6 +1,6 @@
 import { useSelectionBoxState } from "."
 import { Circle, Group, Rect, Text } from "react-konva"
-import { useProjectState } from "../projectState";
+import { useProjectState } from "../../projectState";
 import { useEffect, useRef, useState } from "react";
 export function SelectionBoxRects() {
     const nodes = useSelectionBoxState('nodes')

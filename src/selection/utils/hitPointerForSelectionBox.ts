@@ -1,5 +1,5 @@
 import { getSelectionBoxState } from "../selection-box"
-import { getSharedStage } from "../App"
+import { getSharedStage } from "../../App"
 import { getTransform, isPointInRect } from "./index"
 
 export const hitPointerForSelectionBox = () => {
