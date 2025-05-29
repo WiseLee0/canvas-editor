@@ -1,10 +1,10 @@
-import { getSharedStage } from "@/components/canvas/stage"
 import { getProjectState } from "@/store"
 import { hitTestRectNodes } from "./intersect"
 import { transformRenderNode } from "./transformRenderNode"
+import { getSelectionBoxState } from "../selection-box"
 
 export const getPointerForElement = () => {
-    const stage = getSharedStage()
+    const stage = getSelectionBoxState('stage')!
     const elements = getProjectState('elements')
     const scale = getProjectState('viewport').scale
     const hotRect = 4 / scale

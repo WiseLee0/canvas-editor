@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react"
-import { getSharedStage } from "@/components/canvas/stage"
 import { getProjectState } from "@/store"
-import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState } from ".."
+import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState, useSelectionBoxState } from ".."
 import _ from "lodash"
 
 export const useDragBoxEvent = () => {
+    const stage = useSelectionBoxState('stage')
     const mouseRef = useRef({
         isDown: false,
         isEnoughMove: false,
@@ -15,8 +15,8 @@ export const useDragBoxEvent = () => {
         oldElements: [] as any[],
     })
     useEffect(() => {
+        if (!stage) return;
         const handleMouseDown = () => {
-            const stage = getSharedStage()
             mouseRef.current.isDown = false
             const pos = stage.getRelativePointerPosition()
             const hotId = getHoverSelectionRectState('hotId')
@@ -28,7 +28,6 @@ export const useDragBoxEvent = () => {
             mouseRef.current.stageY = pos.y
         }
         const handleMouseMove = () => {
-            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return
             const pos = stage.getRelativePointerPosition()
             if (!pos) return
@@ -58,15 +57,13 @@ export const useDragBoxEvent = () => {
             elementUpdater.batchUpdatePositions(boxs, oldElements, dx, dy)
         }
 
-        window.addEventListener('mousedown', handleMouseDown)
-        window.addEventListener('mousemove', handleMouseMove)
-        window.addEventListener('mouseup', handleMouseUp)
+        stage.on('mousedown', handleMouseDown)
+        stage.on('mousemove', handleMouseMove)
+        stage.on('mouseup', handleMouseUp)
         return () => {
-            window.removeEventListener('mousedown', handleMouseDown)
-            window.removeEventListener('mousemove', handleMouseMove)
-            window.removeEventListener('mouseup', handleMouseUp)
+            stage.off('mousedown', handleMouseDown)
+            stage.off('mousemove', handleMouseMove)
+            stage.off('mouseup', handleMouseUp)
         }
-    }, [])
-
-
+    }, [stage])
 }

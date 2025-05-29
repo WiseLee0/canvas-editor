@@ -69,3 +69,10 @@ export const getElementById = (id: string, elements?: any[]) => {
 
     return findElement(elements);
 };
+
+export const updateElement = (id: string, changes: Partial<Element>) => {
+    const element = getElementById(id)
+    if (element) {
+        Object.assign(element, changes)
+    }
+}

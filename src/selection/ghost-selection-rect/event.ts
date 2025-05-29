@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
-import { getSharedStage } from "@/components/canvas/stage"
 import { getProjectState, setProjectState } from "@/store"
-import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode } from "..";
+import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode, useSelectionBoxState } from "..";
 import _ from "lodash";
-import { BaseRect } from "../../types/geometry"
+import { BaseRect } from "../types/geometry"
 
 type GhostNode = BaseRect
 
 export const useGhostSelectionRectEvent = () => {
+    const stage = useSelectionBoxState('stage')
     const moveRef = useRef<number | null>(null)
     const mouseRef = useRef({
         isDown: false,
@@ -17,9 +17,8 @@ export const useGhostSelectionRectEvent = () => {
         oldSelection: [] as string[]
     })
     useEffect(() => {
-
+        if (!stage) return;
         const handleMouseDown = () => {
-            const stage = getSharedStage()
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
@@ -39,7 +38,6 @@ export const useGhostSelectionRectEvent = () => {
         }
 
         const handleMouseMove = (e: MouseEvent) => {
-            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return
             if (moveRef.current !== null) {
                 cancelAnimationFrame(moveRef.current)
@@ -107,7 +105,6 @@ export const useGhostSelectionRectEvent = () => {
         }
 
         const changeCanvasOffset = (e: MouseEvent) => {
-            const stage = getSharedStage()
             let [x, y] = [e.clientX, e.clientY]
             const canvas = stage.content;
             const [ox, oy, ow, oh] = [canvas.offsetLeft, canvas.offsetTop, canvas.offsetWidth, canvas.offsetHeight]
@@ -182,17 +179,17 @@ export const useGhostSelectionRectEvent = () => {
             }
         }
 
-        window.addEventListener('mousedown', handleMouseDown)
+        stage.on('mousedown', handleMouseDown)
         window.addEventListener('mousemove', handleMouseMove)
         window.addEventListener('mouseup', handleMouseUp)
 
         return () => {
-            window.removeEventListener('mousedown', handleMouseDown)
+            stage.off('mousedown', handleMouseDown)
             window.removeEventListener('mousemove', handleMouseMove)
             window.removeEventListener('mouseup', handleMouseUp)
         }
 
-    }, [])
+    }, [stage])
 
 
 }

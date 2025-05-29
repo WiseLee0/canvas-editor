@@ -2,8 +2,9 @@ import Konva from "konva";
 import { selectionBoxConfig } from "..";
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "@/utils/createStoreUtils";
-import { Node } from "../../../types/geometry"
-import { SelectionBoxConfig, SelectionBoxState } from "../../../types/selection"
+import { Node } from "../../types/geometry"
+import { SelectionBoxConfig, SelectionBoxState } from "../../types/selection"
+import { Stage } from "konva/lib/Stage";
 
 interface ExtendedNode extends Node {
   id: string;
@@ -21,6 +22,7 @@ interface ExtendedSelectionBoxState extends Omit<SelectionBoxState, 'nodes'> {
   config: SelectionBoxConfig[];    // 元素选框，配置文件
   isDragging: boolean; // 是否拖拽中
   dragNodeId: string;  // 拖拽的节点id
+  stage: Stage | null;
 }
 
 export const _selectionBoxState = createWithEqualityFn<ExtendedSelectionBoxState>()(() => ({
@@ -31,6 +33,7 @@ export const _selectionBoxState = createWithEqualityFn<ExtendedSelectionBoxState
   config: selectionBoxConfig,
   isDragging: false,
   dragNodeId: '',
+  stage: null,
 }));
 
 export const clearSelectionNodes = () => {

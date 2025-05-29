@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
 import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from ".."
-import { getSharedStage } from "@/components/canvas/stage"
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
 export const useSelectionBoxEvent = () => {
+    const stage = useSelectionBoxState('stage')
     const selection = useProjectState('selection')
     const renderDep = useSelectionBoxState('renderDep')
     const mouseRef = useRef({
@@ -23,8 +23,8 @@ export const useSelectionBoxEvent = () => {
     })
 
     useEffect(() => {
+        if (!stage) return;
         const handleMouseDown = () => {
-            const stage = getSharedStage()
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
@@ -41,7 +41,6 @@ export const useSelectionBoxEvent = () => {
         }
 
         const handleMouseMove = () => {
-            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return;
             const pos = stage.getRelativePointerPosition()
             if (!pos || !mouseRef.current.isDown) return
@@ -76,15 +75,15 @@ export const useSelectionBoxEvent = () => {
             setSelectionBoxState({ isDragging: false })
         }
 
-        window.addEventListener('mousedown', handleMouseDown)
+        stage.on('mousedown', handleMouseDown)
         window.addEventListener('mousemove', handleMouseMove)
         window.addEventListener('mouseup', handleMouseUp)
         return () => {
-            window.removeEventListener('mousedown', handleMouseDown)
+            stage.off('mousedown', handleMouseDown)
             window.removeEventListener('mousemove', handleMouseMove)
             window.removeEventListener('mouseup', handleMouseUp)
         }
-    }, [])
+    }, [stage])
 
     useEffect(() => {
         if (!selection.length) {
@@ -326,7 +325,7 @@ export const useSelectionBoxEvent = () => {
 
     // 辅助函数：更新旋转光标
     const updateRotationCursor = (hotId: string, rotation: number) => {
-        const stage = getSharedStage();
+        const stage = getSelectionBoxState('stage');
         const cursorMap: Record<string, string> = {
             'rotation-top-left': 'nwse-rotate',
             'rotation-top-right': 'nesw-rotate',

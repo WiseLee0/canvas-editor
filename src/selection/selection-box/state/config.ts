@@ -1,4 +1,4 @@
-import { WH, SelectionBoxConfig } from '../../../types/selection'
+import { WH, SelectionBoxConfig } from '../../types/selection'
 
 export const selectionBoxConfig = [{
     type: 'shape_square',

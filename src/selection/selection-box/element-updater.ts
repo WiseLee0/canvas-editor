@@ -1,13 +1,13 @@
 import { Transform } from "konva/lib/Util"
-import { getElementById } from "@/store"
+import { getElementById, updateElement } from "@/store"
 import { changeSelectionRender } from ".."
-import { 
-    SingleElementUpdateParams, 
-    MultipleTransformUpdateParams, 
-    MultipleKeepRatioUpdateParams, 
-    BatchUpdateParams,
-    ElementChanges 
-} from "../../types/element"
+import {
+  SingleElementUpdateParams,
+  MultipleTransformUpdateParams,
+  MultipleKeepRatioUpdateParams,
+  BatchUpdateParams,
+  ElementChanges
+} from "../types/element"
 
 /**
  * 统一的元素更新管理器
@@ -217,7 +217,8 @@ export class ElementUpdater {
    * 应用元素属性变更
    */
   private applyElementChanges(element: any, changes: Partial<ElementChanges>): void {
-    Object.assign(element, changes)
+    // Object.assign(element, changes)
+    updateElement(element.id, changes)
   }
 
   /**

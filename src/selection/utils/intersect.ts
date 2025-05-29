@@ -1,4 +1,4 @@
-import { Node } from '../../types/geometry'
+import { Node } from '../types/geometry'
 
 // 判断两个矩形节点是否相交
 export function hitTestRectNodes(node1: Node, node2: Node): boolean {

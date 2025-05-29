@@ -1,10 +1,9 @@
 import { getSelectionBoxState } from "../selection-box"
-import { getSharedStage } from "@/components/canvas/stage"
 import { getTransform, isPointInRect } from "./index"
 
 export const hitPointerForSelectionBox = () => {
     const boxs = getSelectionBoxState('nodes')
-    const stage = getSharedStage()
+    const stage = getSelectionBoxState('stage')!
     const pointer = stage.getRelativePointerPosition()
     if (!boxs?.length || !pointer) return null
     

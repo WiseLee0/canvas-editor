@@ -4,7 +4,7 @@ import { RenderElements } from "./render";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "@/store";
-import { useSelectionEvent, changeSelectionRender, SelectionRender } from "./selection";
+import { useSelectionEvent, changeSelectionRender, SelectionRender, setSelectionBoxState } from "./selection";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -91,7 +91,7 @@ function App() {
 
   useEffect(() => {
     if (stageRef.current) {
-      (window as any).stage = stageRef.current;
+      setSelectionBoxState({ stage: stageRef.current });
       (window as any).STARFLOW = {
         getProjectState
       }

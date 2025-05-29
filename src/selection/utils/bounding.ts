@@ -1,4 +1,4 @@
-import { Point, BoundingBox } from '../../types/geometry'
+import { Point, BoundingBox } from '../types/geometry'
 
 export function getPointsBoundingBox(points: Point[]): BoundingBox {
     if (points.length === 0) {

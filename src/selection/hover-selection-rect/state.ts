@@ -1,6 +1,6 @@
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "@/utils/createStoreUtils";
-import { HoverSelectionRectState } from "../../types/selection"
+import { HoverSelectionRectState } from "../types/selection"
 
 export const _hoverSelectionRectState = createWithEqualityFn<HoverSelectionRectState>()(() => ({
     node: null,
