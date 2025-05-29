@@ -1,31 +1,29 @@
 import Konva from "konva";
-import { selectionBoxConfig, SelectionBoxConfig } from "..";
+import { selectionBoxConfig } from "..";
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "@/utils/createStoreUtils";
+import { Node } from "../../../types/geometry"
+import { SelectionBoxConfig, SelectionBoxState } from "../../../types/selection"
 
-interface Node {
+interface ExtendedNode extends Node {
   id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation: number;
   scaleX: number;
   scaleY: number;
   selection: string[];
   frames: any;
 }
 
-interface SelectionBoxState {
+interface ExtendedSelectionBoxState extends Omit<SelectionBoxState, 'nodes'> {
   konvaGroupRef: React.RefObject<Konva.Group> | null; // konvaGroup节点
   renderDep: boolean;  // 渲染依赖
-  nodes: Node[];       // 渲染外框数据
-  innerNodes: Node[];  // 渲染内框数据
+  nodes: ExtendedNode[];       // 渲染外框数据
+  innerNodes: ExtendedNode[];  // 渲染内框数据
   config: SelectionBoxConfig[];    // 元素选框，配置文件
   isDragging: boolean; // 是否拖拽中
   dragNodeId: string;  // 拖拽的节点id
 }
-export const _selectionBoxState = createWithEqualityFn<SelectionBoxState>()(() => ({
+
+export const _selectionBoxState = createWithEqualityFn<ExtendedSelectionBoxState>()(() => ({
   konvaGroupRef: null,
   renderDep: false,
   nodes: [],
@@ -52,4 +50,4 @@ export const {
   useStore: useSelectionBoxState,
   setState: setSelectionBoxState,
   getState: getSelectionBoxState,
-} = createStoreUtils<SelectionBoxState>(_selectionBoxState);
+} = createStoreUtils<ExtendedSelectionBoxState>(_selectionBoxState);

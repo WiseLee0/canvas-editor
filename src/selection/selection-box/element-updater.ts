@@ -1,50 +1,13 @@
 import { Transform } from "konva/lib/Util"
 import { getElementById } from "@/store"
 import { changeSelectionRender } from ".."
-
-// 元素更新类型枚举
-export enum UpdateType {
-  SINGLE_ELEMENT = 'single',
-  MULTIPLE_TRANSFORM = 'multiple_transform',
-  MULTIPLE_KEEP_RATIO = 'multiple_keep_ratio'
-}
-
-// 单个元素更新参数
-interface SingleElementUpdateParams {
-  element: any
-  oldTransform: Transform
-  transform: Transform
-  width: number
-  height: number
-}
-
-// 多元素变换更新参数
-interface MultipleTransformUpdateParams {
-  element: any
-  oldElement: any
-  currentBox: any
-  deltaX: number
-  deltaY: number
-  offsetX: number
-  offsetY: number
-}
-
-// 多元素等比更新参数
-interface MultipleKeepRatioUpdateParams {
-  element: any
-  oldElement: any
-  currentBox: any
-  scale: number
-  offsetX: number
-  offsetY: number
-}
-
-// 批量更新参数
-interface BatchUpdateParams {
-  elements: any[]
-  oldElements: any[]
-  updateFn: (element: any, oldElement: any, index: number) => void
-}
+import { 
+    SingleElementUpdateParams, 
+    MultipleTransformUpdateParams, 
+    MultipleKeepRatioUpdateParams, 
+    BatchUpdateParams,
+    ElementChanges 
+} from "../../types/element"
 
 /**
  * 统一的元素更新管理器
@@ -67,7 +30,7 @@ export class ElementUpdater {
   updateSingleElement(params: SingleElementUpdateParams): void {
     const { element, oldTransform, transform, width, height } = params
 
-    const newTransform = oldTransform.multiply(transform)
+    const newTransform: Transform = oldTransform.multiply(transform)
     const result = newTransform.decompose()
 
     this.applyElementChanges(element, {
@@ -253,13 +216,7 @@ export class ElementUpdater {
   /**
    * 应用元素属性变更
    */
-  private applyElementChanges(element: any, changes: Partial<{
-    x: number
-    y: number
-    width: number
-    height: number
-    rotation: number
-  }>): void {
+  private applyElementChanges(element: any, changes: Partial<ElementChanges>): void {
     Object.assign(element, changes)
   }
 

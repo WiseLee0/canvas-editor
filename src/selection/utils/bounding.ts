@@ -1,9 +1,6 @@
-interface Point {
-    x: number;
-    y: number;
-}
+import { Point, BoundingBox } from '../../types/geometry'
 
-export function getPointsBoundingBox(points: Point[]): [number, number, number, number] {
+export function getPointsBoundingBox(points: Point[]): BoundingBox {
     if (points.length === 0) {
         throw new Error("Points array cannot be empty");
     }

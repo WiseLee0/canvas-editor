@@ -1,16 +1,7 @@
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "@/utils/createStoreUtils";
+import { GhostSelectionRectState } from "../../types/selection"
 
-interface Node {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-
-interface GhostSelectionRectState {
-    node: Node | null;       // 渲染框数据
-}
 export const _ghostSelectionRectState = createWithEqualityFn<GhostSelectionRectState>()(() => ({
     node: null,
 }));

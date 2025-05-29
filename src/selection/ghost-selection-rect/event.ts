@@ -3,12 +3,10 @@ import { getSharedStage } from "@/components/canvas/stage"
 import { getProjectState, setProjectState } from "@/store"
 import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode } from "..";
 import _ from "lodash";
-interface GhostNode {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
+import { BaseRect } from "../../types/geometry"
+
+type GhostNode = BaseRect
+
 export const useGhostSelectionRectEvent = () => {
     const moveRef = useRef<number | null>(null)
     const mouseRef = useRef({
