@@ -81,7 +81,7 @@ export const useGhostSelectionRectEvent = () => {
                 });
 
                 const viewport = getProjectState('viewport')
-                setProjectState({ viewport: { ...viewport, x: viewport.x + tx * scale, y: viewport.y + ty * scale } })
+                setProjectState({ viewport: { ...viewport, x: viewport.x - tx * scale, y: viewport.y - ty * scale } })
 
                 setGhostSelectionRectState({
                     node: {

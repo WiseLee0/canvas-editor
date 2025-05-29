@@ -4,7 +4,7 @@ import { RenderElements } from "./render";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "@/store";
-import { useSelectionEvent, HoverSelectionRect, changeSelectionRender, SelectionBoxRects, GhostSelectionRect } from "./selection";
+import { useSelectionEvent, changeSelectionRender, SelectionRender } from "./selection";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -27,13 +27,16 @@ function App() {
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        // 计算新的缩放比例
-        const oldScale = scale;
-        const newScale = e.deltaY > 0 ? scale * 0.95 : scale * 1.05;
-        const scaleRatio = newScale / oldScale;
+        // 计算鼠标在世界坐标系中的位置（缩放前）
+        const worldMouseX = (mouseX - x) / scale;
+        const worldMouseY = (mouseY - y) / scale;
 
-        const newX = (x + mouseX) * scaleRatio - mouseX;
-        const newY = (y + mouseY) * scaleRatio - mouseY;
+        // 计算新的缩放比例
+        const newScale = e.deltaY > 0 ? scale * 0.95 : scale * 1.05;
+
+        // 计算新的偏移量，使得鼠标下的世界坐标点保持不变
+        const newX = mouseX - worldMouseX * newScale;
+        const newY = mouseY - worldMouseY * newScale;
 
         setProjectState({
           viewport: {
@@ -48,8 +51,8 @@ function App() {
       const panSpeed = 0.7;
       setProjectState({
         viewport: {
-          x: x + e.deltaX * panSpeed,
-          y: y + e.deltaY * panSpeed,
+          x: (x - e.deltaX * panSpeed),
+          y: (y - e.deltaY * panSpeed),
           scale: scale
         }
       });
@@ -99,12 +102,10 @@ function App() {
 
   return <div>
     <div style={{ height: 50, width: '100%', backgroundColor: 'black', background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>
-    <Stage width={window.innerWidth} height={window.innerHeight - 50} ref={stageRef} scaleX={scale} scaleY={scale} x={-x} y={-y} >
+    <Stage width={window.innerWidth} height={window.innerHeight - 50} ref={stageRef} scaleX={scale} scaleY={scale} x={x} y={y} >
       <Layer >
         <RenderElements />
-        <HoverSelectionRect />
-        <SelectionBoxRects />
-        <GhostSelectionRect />
+        <SelectionRender />
       </Layer>
     </Stage>
   </div>;
