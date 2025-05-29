@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
-import { getSharedStage } from "../../App"
-import { getProjectState } from "../../projectState"
+import { getSharedStage } from "@/components/canvas/stage"
+import { getProjectState } from "@/store"
 import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState } from ".."
 import _ from "lodash"
 
@@ -15,8 +15,8 @@ export const useDragBoxEvent = () => {
         oldElements: [] as any[],
     })
     useEffect(() => {
-        const stage = getSharedStage()
         const handleMouseDown = () => {
+            const stage = getSharedStage()
             mouseRef.current.isDown = false
             const pos = stage.getRelativePointerPosition()
             const hotId = getHoverSelectionRectState('hotId')
@@ -28,10 +28,11 @@ export const useDragBoxEvent = () => {
             mouseRef.current.stageY = pos.y
         }
         const handleMouseMove = () => {
+            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return
             const pos = stage.getRelativePointerPosition()
             if (!pos) return
-            const scale = getProjectState('scale')
+            const scale = getProjectState('viewport').scale
             const [dx, dy] = [pos.x - mouseRef.current.stageX, pos.y - mouseRef.current.stageY]
             const moveThreshold = 2 / scale
             if (!mouseRef.current.isEnoughMove && (Math.abs(dx) > moveThreshold || Math.abs(dy) > moveThreshold)) {

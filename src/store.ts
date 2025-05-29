@@ -1,51 +1,71 @@
-import { Shape } from "konva/lib/Shape";
-import { RectConfig } from "konva/lib/shapes/Rect";
-class DataStoreInstance {
-  data: RectConfig[] = [];
-  count = 0;
-  constructor() {
-    const rects = [
-      {
-        type: "rect",
-        id: "rect1",
-        x: 120,
-        y: 60,
-        width: 60,
-        height: 60,
-        fill: "#FF6B6B",
-        draggable: true,
-      },
-    ] as RectConfig[];
-    const frame = {
-      type: "frame",
-      id: "frame1",
-      x: 320,
-      y: 120,
-      width: 300,
-      height: 300,
-      fill: "#F0F4FF",
-      stroke: "#4A90E2",
-      children: [
-        {
-          type: "rect",
-          id: "rect2",
-          x: 20,
-          y: 20,
-          width: 60,
-          height: 60,
-          fill: "#FF6BCC",
-          draggable: true,
-        },
-      ],
+import { createWithEqualityFn } from "zustand/traditional";
+import { createStoreUtils } from "./utils/createStoreUtils";
+import { mockElements } from "./mock";
+
+interface Element {
+    id: string
+    x: number
+    y: number
+    width: number
+    height: number
+    rotation: number
+    [key: string]: any
+}
+interface ProjectState {
+    elements: Element[]
+    selection: string[]
+    viewport: {
+        x: number
+        y: number
+        scale: number
+    }
+}
+const startX = mockElements.reduce((acc, cur) => {
+    return Math.min(acc, cur.x)
+}, Infinity)
+const startY = mockElements.reduce((acc, cur) => {
+    return Math.min(acc, cur.y)
+}, Infinity)
+export const _projectState = createWithEqualityFn<ProjectState>()(() => ({
+    elements: mockElements,
+    selection: [],
+    viewport: {
+        x: (startX - 1000) * 0.1,
+        y: (startY - 1000) * 0.1,
+        scale: 0.1,
+    }
+}));
+
+export const {
+    useStore: useProjectState,
+    setState: _setProjectState,
+    getState: getProjectState,
+} = createStoreUtils<ProjectState>(_projectState);
+
+// DEBUG模式
+export const setProjectState = (state: Partial<ProjectState>) => {
+    _setProjectState(state)
+}
+
+
+export const getElementById = (id: string, elements?: any[]) => {
+    if (!elements || !elements.length) {
+        elements = getProjectState('elements');
+    }
+    const findElement = (elements: any) => {
+        for (const element of elements) {
+            if (element.id === id) {
+                return element;
+            }
+            if (element?.elements?.length) {
+                const ele = findElement(element?.elements) as any;
+                if (ele) {
+                    return ele;
+                }
+            }
+        }
+        return null;
     };
-    this.data = [rects[0], frame];
-  }
-}
 
-export const DataStore = new DataStoreInstance();
-
-class GlobalStoreInstance {
-  selectNode?: Shape | null;
-}
-
-export const GlobalStore = new GlobalStoreInstance();
+    return findElement(elements);
+};

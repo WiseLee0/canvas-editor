@@ -1,5 +1,5 @@
 import { Group, Rect, Text, Image, Ellipse } from "react-konva";
-import { getProjectState, useProjectState } from "./projectState";
+import { getProjectState, useProjectState } from "./store";
 import { useSelectionBoxState } from "./selection/selection-box";
 import { useState, useEffect } from "react";
 import imageURL from './assets/image.jpeg?url'
@@ -10,7 +10,7 @@ export function RenderElements() {
 }
 
 function Render({ elements }: { elements: any[] }) {
-    const scale = getProjectState('scale')
+    const scale = getProjectState('viewport').scale
     return elements.map(element => {
         if (element.type === "shape_square") {
             return <Rect

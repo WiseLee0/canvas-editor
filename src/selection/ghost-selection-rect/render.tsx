@@ -1,9 +1,9 @@
 import { Rect } from "react-konva";
 import { useGhostSelectionRectState } from "..";
-import { useProjectState } from "../../projectState";
+import { useProjectState } from "@/store";
 export function GhostSelectionRect() {
     const node = useGhostSelectionRectState('node')
-    const scale = useProjectState('scale')
+    const scale = useProjectState('viewport').scale
     if (!node) return null;
 
     return <Rect

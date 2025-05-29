@@ -1,31 +1,24 @@
 import { Layer, Stage } from "react-konva";
 import "./App.css";
 import { RenderElements } from "./render";
-import { GhostSelectionRect, useGhostSelectionRectEvent } from "./selection/ghost-selection-rect";
 import { useEffect, useRef } from "react";
 import Konva from "konva";
-import { getProjectState, setProjectState, useProjectState } from "./projectState";
-import { changeSelectionRender, SelectionBoxRects, useSelectionBoxEvent } from "./selection/selection-box";
-import { HoverSelectionRect, useHoverSelectionRectEvent } from "./selection/hover-selection-rect";
-import { useDragBoxEvent } from "./selection/drag-box";
-
-let sharedStageRef = { current: null };
-export const getSharedStage = () => sharedStageRef.current as unknown as Konva.Stage;
+import { getProjectState, setProjectState, useProjectState } from "@/store";
+import { useSelectionEvent, HoverSelectionRect, changeSelectionRender, SelectionBoxRects, GhostSelectionRect } from "./selection";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
-  const scale = useProjectState('scale')
-  const x = useProjectState('x')
-  const y = useProjectState('y')
+  const viewport = useProjectState('viewport')
+  const x = viewport.x
+  const y = viewport.y
+  const scale = viewport.scale
   useEffect(() => {
-    const stage = stageRef.current!;
-    sharedStageRef.current = stage as any;
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
-      const x = getProjectState('x')
-      const y = getProjectState('y')
-      const scale = getProjectState('scale')
-
+      const viewport = getProjectState('viewport')
+      const x = viewport.x
+      const y = viewport.y
+      const scale = viewport.scale
       if (e.ctrlKey) {
         const stage = stageRef.current!;
 
@@ -43,17 +36,22 @@ function App() {
         const newY = (y + mouseY) * scaleRatio - mouseY;
 
         setProjectState({
-          scale: newScale,
-          x: newX,
-          y: newY
+          viewport: {
+            scale: newScale,
+            x: newX,
+            y: newY
+          }
         });
         return;
       }
       // 普通滚动时平移画布
       const panSpeed = 0.7;
       setProjectState({
-        x: x + e.deltaX * panSpeed,
-        y: y + e.deltaY * panSpeed
+        viewport: {
+          x: x + e.deltaX * panSpeed,
+          y: y + e.deltaY * panSpeed,
+          scale: scale
+        }
       });
     }
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -87,10 +85,17 @@ function App() {
       changeSelectionRender()
     }
   }, [])
-  useHoverSelectionRectEvent()
-  useSelectionBoxEvent()
-  useGhostSelectionRectEvent()
-  useDragBoxEvent()
+
+  useEffect(() => {
+    if (stageRef.current) {
+      (window as any).stage = stageRef.current;
+      (window as any).STARFLOW = {
+        getProjectState
+      }
+    }
+  }, [])
+
+  useSelectionEvent()
 
   return <div>
     <div style={{ height: 50, width: '100%', backgroundColor: 'black', background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>

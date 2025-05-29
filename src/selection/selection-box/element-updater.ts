@@ -1,5 +1,5 @@
 import { Transform } from "konva/lib/Util"
-import { getElementById } from "../../util"
+import { getElementById } from "@/store"
 import { changeSelectionRender } from ".."
 
 // 元素更新类型枚举

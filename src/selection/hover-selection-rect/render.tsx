@@ -1,10 +1,10 @@
 import { Rect } from "react-konva";
-import { useProjectState } from "../../projectState"
+import { useProjectState } from "@/store"
 import { useHoverSelectionRectState } from ".."
 
 export function HoverSelectionRect() {
     const node = useHoverSelectionRectState('node')
-    const scale = useProjectState('scale')
+    const scale = useProjectState('viewport').scale
     if (!node) return null;
 
     return <Rect

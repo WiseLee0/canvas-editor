@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react"
-import { getProjectState, useProjectState } from "../../projectState"
+import { getProjectState, useProjectState, getElementById } from "@/store"
 import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from ".."
-import { getSharedStage } from "../../App"
+import { getSharedStage } from "@/components/canvas/stage"
 import _ from "lodash"
-import { getElementById } from "../../util"
 import { Transform } from "konva/lib/Util"
 
 export const useSelectionBoxEvent = () => {
@@ -24,9 +23,8 @@ export const useSelectionBoxEvent = () => {
     })
 
     useEffect(() => {
-        const stage = getSharedStage()
-
         const handleMouseDown = () => {
+            const stage = getSharedStage()
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
@@ -43,10 +41,11 @@ export const useSelectionBoxEvent = () => {
         }
 
         const handleMouseMove = () => {
+            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return;
             const pos = stage.getRelativePointerPosition()
             if (!pos || !mouseRef.current.isDown) return
-            const scale = getProjectState('scale')
+            const scale = getProjectState('viewport').scale
             mouseRef.current.currentStageX = pos.x
             mouseRef.current.currentStageY = pos.y
             const [dx, dy] = [pos.x - mouseRef.current.stageX, pos.y - mouseRef.current.stageY]

@@ -1,12 +1,12 @@
-import { getSharedStage } from "../../App"
-import { getProjectState } from "../../projectState"
+import { getSharedStage } from "@/components/canvas/stage"
+import { getProjectState } from "@/store"
 import { hitTestRectNodes } from "./intersect"
 import { transformRenderNode } from "./transformRenderNode"
 
 export const getPointerForElement = () => {
     const stage = getSharedStage()
     const elements = getProjectState('elements')
-    const scale = getProjectState('scale')
+    const scale = getProjectState('viewport').scale
     const hotRect = 4 / scale
     const pos = stage.getRelativePointerPosition()
     if (!pos) return null;

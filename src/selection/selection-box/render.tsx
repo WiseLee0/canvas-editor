@@ -1,11 +1,11 @@
 import { useSelectionBoxState } from "."
 import { Circle, Group, Rect, Text } from "react-konva"
-import { useProjectState } from "../../projectState";
+import { useProjectState } from "@/store";
 import { useEffect, useRef, useState } from "react";
 export function SelectionBoxRects() {
     const nodes = useSelectionBoxState('nodes')
     const innerNodes = useSelectionBoxState('innerNodes')
-    const scale = useProjectState('scale')
+    const scale = useProjectState('viewport').scale
 
     const renderOuterNode = () => {
         const nodeAnchor = (node: any) => [{ x: 0, y: 0 }, { x: node.width, y: 0 }, { x: 0, y: node.height }, { x: node.width, y: node.height }]
@@ -66,7 +66,7 @@ export function SelectionBoxRects() {
 }
 
 const RenderOuterLabel = ({ node, direction }: any) => {
-    const scale = useProjectState('scale')
+    const scale = useProjectState('viewport').scale
     const textRef = useRef<any>(null);
     const text = `${Math.round(node.width * 100) / 100} × ${Math.round(node.height * 100) / 100}`
     const fontSize = 12 / scale

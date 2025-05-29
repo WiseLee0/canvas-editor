@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { getSharedStage } from "../../App";
+import { getSharedStage } from "@/components/canvas/stage"
+import { getProjectState, setProjectState } from "@/store"
 import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode } from "..";
-import { getProjectState, setProjectState } from "../../projectState";
 import _ from "lodash";
 interface GhostNode {
     x: number;
@@ -19,9 +19,9 @@ export const useGhostSelectionRectEvent = () => {
         oldSelection: [] as string[]
     })
     useEffect(() => {
-        const stage = getSharedStage()
 
         const handleMouseDown = () => {
+            const stage = getSharedStage()
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
@@ -41,13 +41,14 @@ export const useGhostSelectionRectEvent = () => {
         }
 
         const handleMouseMove = (e: MouseEvent) => {
+            const stage = getSharedStage()
             if (!mouseRef.current.isDown) return
             if (moveRef.current !== null) {
                 cancelAnimationFrame(moveRef.current)
                 moveRef.current = null;
             }
             const viewportChange = () => {
-                const scale = getProjectState('scale')
+                const scale = getProjectState('viewport').scale
                 const [cx, cy] = changeCanvasOffset(e)
                 const pos = stage.getRelativePointerPosition()
                 if (!pos || !mouseRef.current.isDown) {
@@ -81,7 +82,8 @@ export const useGhostSelectionRectEvent = () => {
                     return v > 0 ? speed : -speed;
                 });
 
-                setProjectState({ x: getProjectState('x') + tx * scale, y: getProjectState('y') + ty * scale })
+                const viewport = getProjectState('viewport')
+                setProjectState({ viewport: { ...viewport, x: viewport.x + tx * scale, y: viewport.y + ty * scale } })
 
                 setGhostSelectionRectState({
                     node: {
@@ -107,6 +109,7 @@ export const useGhostSelectionRectEvent = () => {
         }
 
         const changeCanvasOffset = (e: MouseEvent) => {
+            const stage = getSharedStage()
             let [x, y] = [e.clientX, e.clientY]
             const canvas = stage.content;
             const [ox, oy, ow, oh] = [canvas.offsetLeft, canvas.offsetTop, canvas.offsetWidth, canvas.offsetHeight]

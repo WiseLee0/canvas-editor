@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
-import { getProjectState, setProjectState } from "../../projectState"
-import { getSharedStage } from "../../App"
+import { getProjectState, setProjectState } from "../../store"
+import { getSharedStage } from "@/components/canvas/stage"
 import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect } from ".."
 export const useHoverSelectionRectEvent = () => {
     const mouseRef = useRef({
@@ -65,7 +65,7 @@ export const useHoverSelectionRectEvent = () => {
         }
 
         const { x, y } = pos
-        const scale = getProjectState('scale')
+        const scale = getProjectState('viewport').scale
         const hotRect = 4 / scale
         const node = {
             x: x - hotRect, y: y - hotRect, width: hotRect, height: hotRect, rotation: 0
@@ -98,11 +98,11 @@ export const useHoverSelectionRectEvent = () => {
         const selection = getProjectState('selection')
         if (isShiftKey) {
             if (selection.includes(id)) {
-                setProjectState({ selection: selection.filter(curId => curId !== id) })
+                setProjectState({ selection: selection.filter((curId: string) => curId !== id) })
             } else {
                 let newSelection = selection
                 if (removeIds.length) {
-                    newSelection = selection.filter(item => !removeIds.includes(item))
+                    newSelection = selection.filter((item: string) => !removeIds.includes(item))
                 }
                 setProjectState({ selection: [...newSelection, id] })
             }
@@ -157,7 +157,7 @@ const hoverSelectionBox = (boxs: any[], pos: { x: number, y: number }) => {
     if (!boxs?.length) return;
     const stage = getSharedStage()
     const hoverBox = (box: any) => {
-        const scale = getProjectState('scale')
+        const scale = getProjectState('viewport').scale
         const boxTransform = getTransform(box)
         const boxPos = boxTransform.invert().point(pos)
         // 锚点热区
