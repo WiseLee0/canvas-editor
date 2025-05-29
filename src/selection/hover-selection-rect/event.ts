@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { getProjectState, setProjectState } from "../../store"
+import { getProjectState, setProjectState } from "@/store"
 import { getSharedStage } from "@/components/canvas/stage"
 import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect } from ".."
 export const useHoverSelectionRectEvent = () => {
