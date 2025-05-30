@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { getProjectState, setProjectState } from "@/store"
-import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode, useSelectionBoxState } from "..";
+import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode, useSelectionBoxState, useSelectionState } from "..";
 import _ from "lodash";
 import { BaseRect } from "../types/geometry"
 
 type GhostNode = BaseRect
 
 export const useGhostSelectionRectEvent = () => {
-    const stage = useSelectionBoxState('stage')
+    const stage = useSelectionState('stage')
     const moveRef = useRef<number | null>(null)
     const mouseRef = useRef({
         isDown: false,

@@ -1,10 +1,10 @@
 import { getProjectState } from "@/store"
 import { hitTestRectNodes } from "./intersect"
 import { transformRenderNode } from "./transformRenderNode"
-import { getSelectionBoxState } from "../selection-box"
+import { getSelectionState } from "../core"
 
 export const getPointerForElement = () => {
-    const stage = getSelectionBoxState('stage')!
+    const stage = getSelectionState('stage')!
     const elements = getProjectState('elements')
     const scale = getProjectState('viewport').scale
     const hotRect = 4 / scale

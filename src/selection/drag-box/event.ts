@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react"
 import { getProjectState } from "@/store"
-import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState, useSelectionBoxState } from ".."
+import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState, useSelectionState } from ".."
 import _ from "lodash"
 
 export const useDragBoxEvent = () => {
-    const stage = useSelectionBoxState('stage')
+    const stage = useSelectionState('stage')
     const mouseRef = useRef({
         isDown: false,
         isEnoughMove: false,

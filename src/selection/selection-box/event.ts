@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState } from ".."
+import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
@@ -325,7 +325,7 @@ export const useSelectionBoxEvent = () => {
 
     // 辅助函数：更新旋转光标
     const updateRotationCursor = (hotId: string, rotation: number) => {
-        const stage = getSelectionBoxState('stage');
+        const stage = getSelectionState('stage');
         const cursorMap: Record<string, string> = {
             'rotation-top-left': 'nwse-rotate',
             'rotation-top-right': 'nesw-rotate',

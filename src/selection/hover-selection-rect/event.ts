@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, setProjectState } from "@/store"
-import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect, useSelectionBoxState } from ".."
+import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect, useSelectionState, getSelectionState } from ".."
 import Konva from "konva"
+import { canvasEvents } from "@/helpers/canvas-events"
 export const useHoverSelectionRectEvent = () => {
-    const stage = useSelectionBoxState('stage')
+    const stage = useSelectionState('stage')!
     const mouseRef = useRef({
         isDown: false,
         isEnoughMove: false,
@@ -130,7 +131,7 @@ export const useHoverSelectionRectEvent = () => {
         const pointerForElement = getPointerForElement()
         if (!pointerForElement) {
             if (isShiftKey) return
-            setProjectState({ selection: [] })
+            canvasEvents.emit('stage:clickBackground')
             return;
         }
 
@@ -148,7 +149,7 @@ export const useHoverSelectionRectEvent = () => {
         // 选中框内部
         const pointerForElement = getPointerForElement()
         if (!pointerForElement && !mouseRef.current.isEnoughMove) {
-            setProjectState({ selection: [] })
+            canvasEvents.emit('stage:clickBackground')
             return;
         }
         if (mouseRef.current.isEnoughMove) {
@@ -164,7 +165,7 @@ export const useHoverSelectionRectEvent = () => {
             setHoverSelectionRectState({ hotId: '' })
             return;
         }
-        const stage = getSelectionBoxState('stage')
+        const stage = getSelectionState('stage')
         const hoverBox = (box: any) => {
             const scale = getProjectState('viewport').scale
             const boxTransform = getTransform(box)
