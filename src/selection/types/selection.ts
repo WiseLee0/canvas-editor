@@ -21,7 +21,7 @@ export interface HoverNode extends Node {
 }
 
 // 悬停选择框状态接口
-export interface HoverSelectionRectState {
+export interface HoverSelectionState {
     node: HoverNode | null;       // 渲染框数据
     hotId: string;                // 当前热区id
 }

@@ -7,6 +7,7 @@ import { getProjectState, setProjectState, useProjectState } from "@/store";
 import { useSelectionEvent, changeSelectionRender, SelectionRender, setSelectionState } from "./selection";
 import { canvasEvents } from "@/helpers/canvas-events";
 import { clearSelection } from "@/helpers/canvas";
+import { useSelectionDragEvent } from "./drag";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -104,6 +105,7 @@ function App() {
   }, [])
 
   useSelectionEvent()
+  useSelectionDragEvent()
 
   return <div>
     <div style={{ height: 50, width: '100%', backgroundColor: 'black', background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>

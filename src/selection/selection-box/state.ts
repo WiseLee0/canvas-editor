@@ -1,10 +1,8 @@
-import Konva from "konva";
 import { selectionBoxConfig } from "..";
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "@/utils/createStoreUtils";
-import { Node } from "../../types/geometry"
-import { SelectionBoxConfig, SelectionBoxState } from "../../types/selection"
-import { Stage } from "konva/lib/Stage";
+import { Node } from "../types/geometry"
+import { SelectionBoxConfig, SelectionBoxState } from "../types/selection"
 
 interface ExtendedNode extends Node {
   id: string;

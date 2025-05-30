@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState } from ".."
+import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
@@ -28,7 +28,7 @@ export const useSelectionBoxEvent = () => {
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
-            const hotId = getHoverSelectionRectState('hotId')
+            const hotId = getHoverSelectionState('hotId')
             const selection = getProjectState('selection')
             if (!pos || !hotId || !selection.length) {
                 mouseRef.current.isDown = false

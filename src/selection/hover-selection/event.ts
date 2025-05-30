@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, setProjectState } from "@/store"
-import { getCursor, getGhostSelectionRectState, getHoverSelectionRectState, setHoverSelectionRectState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect, useSelectionState, getSelectionState } from ".."
+import { getCursor, getGhostSelectionRectState, getHoverSelectionState, setHoverSelectionState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect, useSelectionState, getSelectionState, disableHoverConfig } from ".."
 import Konva from "konva"
 import { canvasEvents } from "@/helpers/canvas-events"
 export const useHoverSelectionRectEvent = () => {
@@ -67,7 +67,7 @@ export const useHoverSelectionRectEvent = () => {
             stage.content.style.cursor = mouseRef.current.preCursor
         }
         if (!pos || ghostNode || isDragging) {
-            setHoverSelectionRectState({ node: null })
+            setHoverSelectionState({ node: null })
             return
         }
 
@@ -80,7 +80,7 @@ export const useHoverSelectionRectEvent = () => {
 
         // 锚点、边框热区内不可Hover
         if (hoverSelectionBox(selectionBox, pos)) {
-            setHoverSelectionRectState({ node: null })
+            setHoverSelectionState({ node: null })
             return;
         }
 
@@ -89,7 +89,7 @@ export const useHoverSelectionRectEvent = () => {
             for (let i = 0; i < selectionBox.length; i++) {
                 const element = selectionBox[i];
                 if (hitTestRectNodes(node, element)) {
-                    setHoverSelectionRectState({ node: null })
+                    setHoverSelectionState({ node: null })
                     return;
                 }
             }
@@ -97,7 +97,12 @@ export const useHoverSelectionRectEvent = () => {
 
         // 鼠标碰撞检测，确定Hover元素
         const pointerForElement = getPointerForElement()
-        setHoverSelectionRectState({ node: pointerForElement?.renderNode ?? null })
+        // 禁用Hover
+        if (pointerForElement?.element && disableHoverConfig.includes(pointerForElement?.element?.type)) {
+            setHoverSelectionState({ node: null })
+            return;
+        }
+        setHoverSelectionState({ node: pointerForElement?.renderNode ?? null })
     }
 
     const setSelection = (pointerForElement: any, isShiftKey: boolean = false) => {
@@ -120,7 +125,7 @@ export const useHoverSelectionRectEvent = () => {
 
     const setSelectionDown = (isShiftKey: boolean = false) => {
         // 选中框内部
-        const hotId = getHoverSelectionRectState('hotId')
+        const hotId = getHoverSelectionState('hotId')
         const pointerForBox = hitPointerForSelectionBox()
         mouseRef.current.isPointerForBox = Boolean(pointerForBox)
         if (pointerForBox || hotId) {
@@ -140,7 +145,7 @@ export const useHoverSelectionRectEvent = () => {
 
     const setSelectionUp = (isShiftKey: boolean = false) => {
         // 选中框之外
-        const hotId = getHoverSelectionRectState('hotId')
+        const hotId = getHoverSelectionState('hotId')
         const pointerForBox = mouseRef.current.isPointerForBox
         if (!pointerForBox || hotId) {
             return;
@@ -162,7 +167,7 @@ export const useHoverSelectionRectEvent = () => {
     const hoverSelectionBox = (boxs: any[], pos: { x: number, y: number }) => {
         if (!boxs?.length) {
             setSelectionBoxState({ dragNodeId: '' })
-            setHoverSelectionRectState({ hotId: '' })
+            setHoverSelectionState({ hotId: '' })
             return;
         }
         const stage = getSelectionState('stage')
@@ -182,7 +187,7 @@ export const useHoverSelectionRectEvent = () => {
                 if (isPointInRect(boxPos, anchor)) {
                     mouseRef.current.preCursor = stage.content.style.cursor
                     stage.content.style.cursor = getCursor(anchor.cursor as any, box.rotation)
-                    setHoverSelectionRectState({ hotId: anchor.id })
+                    setHoverSelectionState({ hotId: anchor.id })
                     return true
                 }
             }
@@ -200,7 +205,7 @@ export const useHoverSelectionRectEvent = () => {
                 if (isPointInRect(boxPos, rotationAnchor)) {
                     mouseRef.current.preCursor = stage.content.style.cursor
                     stage.content.style.cursor = getCursor(rotationAnchor.cursor as any, box.rotation)
-                    setHoverSelectionRectState({ hotId: rotationAnchor.id })
+                    setHoverSelectionState({ hotId: rotationAnchor.id })
                     return true
                 }
             }
@@ -217,7 +222,7 @@ export const useHoverSelectionRectEvent = () => {
                 if (isPointInRect(boxPos, borderAnchor)) {
                     mouseRef.current.preCursor = stage.content.style.cursor
                     stage.content.style.cursor = getCursor(borderAnchor.cursor as any, box.rotation)
-                    setHoverSelectionRectState({ hotId: borderAnchor.id })
+                    setHoverSelectionState({ hotId: borderAnchor.id })
                     return true
                 }
             }
@@ -231,7 +236,7 @@ export const useHoverSelectionRectEvent = () => {
             }
         }
         setSelectionBoxState({ dragNodeId: '' })
-        setHoverSelectionRectState({ hotId: '' })
+        setHoverSelectionState({ hotId: '' })
         stage.content.style.cursor = mouseRef.current.preCursor
         return false
     }

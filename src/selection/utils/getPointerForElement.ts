@@ -41,6 +41,10 @@ export const getPointerForElement = () => {
                 removeIds.push(...element?.elements.map((item: any) => item.id))
             }
 
+            if (element.type === 'text') {
+
+            }
+
             return {
                 id: element.id,
                 renderNode,

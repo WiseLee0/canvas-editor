@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { getProjectState, setProjectState } from "@/store"
-import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionRectState, transformRenderNode, useSelectionBoxState, useSelectionState } from "..";
+import { getGhostSelectionRectState, setGhostSelectionRectState, hitPointerForSelectionBox, hitTestRectNodes, getHoverSelectionState, transformRenderNode, useSelectionBoxState, useSelectionState } from "..";
 import _ from "lodash";
 import { BaseRect } from "../types/geometry"
 
@@ -22,8 +22,8 @@ export const useGhostSelectionRectEvent = () => {
             mouseRef.current.isDown = true
             mouseRef.current.isEnoughMove = false
             const pos = stage.getRelativePointerPosition();
-            const hotId = getHoverSelectionRectState('hotId')
-            const hoverNode = getHoverSelectionRectState('node')
+            const hotId = getHoverSelectionState('hotId')
+            const hoverNode = getHoverSelectionState('node')
             if (!pos || hotId || hoverNode) {
                 mouseRef.current.isDown = false
                 return
