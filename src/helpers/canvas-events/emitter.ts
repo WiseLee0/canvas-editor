@@ -1,7 +1,4 @@
-type EventHandler<T = any> = (payload: T) => void;
-type EventMap = Record<string, EventHandler>;
-
-export class EventEmitter<TEvents extends EventMap = {}> {
+export class EventEmitter<TEvents extends Record<string, (...args: any[]) => void>> {
   private events: {
     [K in keyof TEvents]?: Set<TEvents[K]>;
   } = {};
@@ -35,11 +32,11 @@ export class EventEmitter<TEvents extends EventMap = {}> {
   /**
    * 触发事件
    * @param event 事件名称
-   * @param payload 事件数据
+   * @param args 事件参数
    */
-  emit<K extends keyof TEvents>(event: K, payload?: Parameters<TEvents[K]>[0]): void {
+  emit<K extends keyof TEvents>(event: K, ...args: Parameters<TEvents[K]>): void {
     if (this.events[event]) {
-      this.events[event]!.forEach(handler => handler(payload as any));
+      this.events[event]!.forEach(handler => handler(...args));
     }
   }
 
@@ -49,11 +46,11 @@ export class EventEmitter<TEvents extends EventMap = {}> {
    * @param handler 事件处理函数
    */
   once<K extends keyof TEvents>(event: K, handler: TEvents[K]): void {
-    const onceHandler = (payload: any) => {
-      handler(payload);
+    const onceHandler = ((...args: Parameters<TEvents[K]>) => {
+      handler(...args);
       this.off(event, onceHandler as TEvents[K]);
-    };
-    this.on(event, onceHandler as TEvents[K]);
+    }) as TEvents[K];
+    this.on(event, onceHandler);
   }
 
   /**

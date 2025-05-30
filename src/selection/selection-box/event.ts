@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState } from ".."
+import { elementUpdater, getCursor, getHoverSelectionRectState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
 export const useSelectionBoxEvent = () => {
-    const stage = useSelectionBoxState('stage')
+    const stage = useSelectionState('stage')
     const selection = useProjectState('selection')
     const renderDep = useSelectionBoxState('renderDep')
     const mouseRef = useRef({

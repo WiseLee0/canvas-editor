@@ -361,7 +361,7 @@ export class ElementUpdater {
    * 触发重新渲染
    */
   private triggerRender(): void {
-    changeSelectionRender()
+    // changeSelectionRender()
   }
 
   /**

@@ -5,7 +5,8 @@ import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "@/store";
 import { useSelectionEvent, changeSelectionRender, SelectionRender, setSelectionState } from "./selection";
-import { useStageEvents } from "./helpers/canvas-events";
+import { canvasEvents } from "@/helpers/canvas-events";
+import { clearSelection } from "@/helpers/canvas";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -97,10 +98,12 @@ function App() {
         getProjectState
       }
     }
+    canvasEvents.on('stage:clickBackground', () => {
+      clearSelection()
+    })
   }, [])
 
   useSelectionEvent()
-  useStageEvents()
 
   return <div>
     <div style={{ height: 50, width: '100%', backgroundColor: 'black', background: 'linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb)' }}></div>

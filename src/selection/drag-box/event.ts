@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState } from "@/store"
-import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState, useSelectionState } from ".."
+import { getSelectionBoxState, elementUpdater, hitPointerForSelectionBox, getHoverSelectionRectState, useSelectionState, getPointerAbosultePos } from ".."
 import _ from "lodash"
 
 export const useDragBoxEvent = () => {
@@ -27,9 +27,9 @@ export const useDragBoxEvent = () => {
             mouseRef.current.stageX = pos.x
             mouseRef.current.stageY = pos.y
         }
-        const handleMouseMove = () => {
+        const handleMouseMove = (event: MouseEvent) => {
             if (!mouseRef.current.isDown) return
-            const pos = stage.getRelativePointerPosition()
+            const pos = getPointerAbosultePos(stage, event)
             if (!pos) return
             const scale = getProjectState('viewport').scale
             const [dx, dy] = [pos.x - mouseRef.current.stageX, pos.y - mouseRef.current.stageY]
@@ -58,12 +58,12 @@ export const useDragBoxEvent = () => {
         }
 
         stage.on('mousedown', handleMouseDown)
-        stage.on('mousemove', handleMouseMove)
-        stage.on('mouseup', handleMouseUp)
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
         return () => {
             stage.off('mousedown', handleMouseDown)
-            stage.off('mousemove', handleMouseMove)
-            stage.off('mouseup', handleMouseUp)
+            window.removeEventListener('mousemove', handleMouseMove)
+            window.removeEventListener('mouseup', handleMouseUp)
         }
     }, [stage])
 }
