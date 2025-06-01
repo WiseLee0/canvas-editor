@@ -11,8 +11,8 @@ export enum UpdateType {
 // 单个元素更新参数
 export interface SingleElementUpdateParams {
   element: any
-  oldTransform: Transform
-  transform: Transform
+  relativeTransform: Transform
+  changeTransform: Transform
   width: number
   height: number
 }

@@ -28,9 +28,9 @@ export class ElementUpdater {
    * 更新单个元素（支持变换矩阵）
    */
   updateSingleElement(params: SingleElementUpdateParams): void {
-    const { element, oldTransform, transform, width, height } = params
+    const { element, relativeTransform, changeTransform, width, height } = params
 
-    const newTransform: Transform = oldTransform.multiply(transform)
+    const newTransform: Transform = relativeTransform.multiply(changeTransform)
     const result = newTransform.decompose()
 
     this.applyElementChanges(element, {
@@ -219,6 +219,7 @@ export class ElementUpdater {
   private applyElementChanges(element: any, changes: Partial<ElementChanges>): void {
     // Object.assign(element, changes)
     updateElement(element.id, changes)
+    this.triggerRender()
   }
 
   /**

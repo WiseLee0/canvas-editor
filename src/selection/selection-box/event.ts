@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState } from ".."
+import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState, getAbsoluteTrElementsByIds } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
@@ -58,7 +58,7 @@ export const useSelectionBoxEvent = () => {
                     mouseRef.current.oldBoxNode = _.cloneDeep(oldBoxNode)
                     mouseRef.current.oldBoxNodes = _.cloneDeep(boxs)
                     mouseRef.current.elements = getProjectState('selection').map((id: any) => getElementById(id))
-                    mouseRef.current.oldElements = _.cloneDeep(mouseRef.current.elements)
+                    mouseRef.current.oldElements = getAbsoluteTrElementsByIds(getProjectState('selection'))
                 }
                 mouseRef.current.isEnoughMove = true
             }
@@ -108,11 +108,12 @@ export const useSelectionBoxEvent = () => {
 
         // 检查是否允许操作
         if (!isOperationAllowed(hotId, config)) return;
-
         // 初始化变换和坐标系转换
         const tr = new Transform();
         tr.reset();
-        const oldTr = getTransform(oldElement);
+        const absoluteTr = oldElement?.tr?.copy();
+        const relativeTr = getTransform(oldElement);
+
         const [dx, dy] = [currentStageX - stageX, currentStageY - stageY];
         const [localDx, localDy] = convertToLocalCoordinates(dx, dy, oldElement.rotation);
 
@@ -127,7 +128,7 @@ export const useSelectionBoxEvent = () => {
 
         // 处理旋转操作
         if (hotId.includes('rotation')) {
-            handleRotation(tr, hotId, oldElement, currentStageX, currentStageY, oldTr);
+            handleRotation(tr, hotId, oldElement, currentStageX, currentStageY, absoluteTr);
             // 旋转操作不改变尺寸，直接使用原尺寸
             width = oldElement.width;
             height = oldElement.height;
@@ -136,8 +137,8 @@ export const useSelectionBoxEvent = () => {
         // 使用统一的元素更新管理器
         elementUpdater.updateSingleElement({
             element,
-            oldTransform: oldTr,
-            transform: tr,
+            relativeTransform: relativeTr,
+            changeTransform: tr,
             width,
             height
         });
