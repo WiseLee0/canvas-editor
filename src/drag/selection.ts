@@ -3,6 +3,7 @@ import { getProjectState } from "@/store"
 import _ from "lodash"
 import { getHoverSelectionState, getPointerAbosultePos, hitPointerForSelectionBox, useSelectionState } from "../selection"
 import { canvasEvents } from "@/helpers/canvas-events"
+import { KonvaEventObject } from "konva/lib/Node"
 
 export const useSelectionDragEvent = () => {
   const stage = useSelectionState('stage')
@@ -14,7 +15,7 @@ export const useSelectionDragEvent = () => {
   })
   useEffect(() => {
     if (!stage) return;
-    const handleMouseDown = () => {
+    const handleMouseDown = (event: KonvaEventObject<MouseEvent>) => {
       mouseRef.current.isDown = false
       const pos = stage.getRelativePointerPosition()
       const hotId = getHoverSelectionState('hotId')
@@ -30,7 +31,7 @@ export const useSelectionDragEvent = () => {
       mouseRef.current.isDown = true
       mouseRef.current.stageX = pos.x
       mouseRef.current.stageY = pos.y
-      canvasEvents.emit('selection:dragStart', { x: pos.x, y: pos.y })
+      canvasEvents.emit('selection:dragStart', event.evt)
     }
     const handleMouseMove = (event: MouseEvent) => {
       if (!mouseRef.current.isDown) return
@@ -43,12 +44,12 @@ export const useSelectionDragEvent = () => {
         mouseRef.current.isEnoughMove = true
       }
       if (!mouseRef.current.isEnoughMove) return
-      canvasEvents.emit('selection:dragMove', { dx, dy })
+      canvasEvents.emit('selection:dragMove', event)
     }
-    const handleMouseUp = () => {
+    const handleMouseUp = (event: MouseEvent) => {
       mouseRef.current.isDown = false
       mouseRef.current.isEnoughMove = false
-      canvasEvents.emit('selection:dragEnd')
+      canvasEvents.emit('selection:dragEnd', event)
     }
 
 

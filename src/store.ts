@@ -31,8 +31,8 @@ export const _projectState = createWithEqualityFn<ProjectState>()(() => ({
     elements: mockElements,
     selection: [],
     viewport: {
-        x: (startX - 2000) * 0.1,
-        y: (startY - 2000) * 0.1,
+        x: (startX + 1000 ) * 0.1,
+        y: (startY + 3000) * 0.1,
         scale: 0.1,
     }
 }));

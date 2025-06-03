@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, flattenNestedArrays, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState, getAbsoluteTrElementsByIds } from ".."
+import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState, getAbsoluteTrElementsByIds } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
@@ -94,7 +94,7 @@ export const useSelectionBoxEvent = () => {
         // 获取选中的Nodes
         const nodes = getSelectionNodes(selection, elements) as any[]
         // 扁平化Nodes
-        const flatNodes = flattenNestedArrays(nodes)
+        const flatNodes = splitFrameLevelNodes(nodes)
         // 合并Nodes
         const boxs = mergeToBoxs(flatNodes) as any[]
         setSelectionBoxState({ nodes: boxs, innerNodes: nodes })
@@ -596,11 +596,29 @@ const getSelectionNodes = (selection: string[], elements: any[]) => {
                         item.__parentFrameId = element.id
                     })
                 }
-                node.push(nodes)
+                node.push(...nodes)
             }
         }
     }
     return node
+}
+
+const splitFrameLevelNodes = (nodes: any) => {
+    const result = {
+        'elements': [],
+    } as any
+    for (const node of nodes) {
+        if (!node.__parentFrameId) {
+            result['elements'].push(node)
+        } else {
+            if (!result[node.__parentFrameId]) {
+                result[node.__parentFrameId] = []
+            }
+            result[node.__parentFrameId].push(node)
+        }
+    }
+
+    return Object.values(result).filter((item: any) => item?.length) as any[][]
 }
 
 const mergeToBoxs = (nodesArr: any[][]) => {

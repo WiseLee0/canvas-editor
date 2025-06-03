@@ -227,6 +227,12 @@ export const useHoverSelectionRectEvent = () => {
                 }
             }
 
+            // 选区热区
+            if (isPointInRect(boxPos, { ...box, x: 0, y: 0 })) {
+                setHoverSelectionState({ hotId: '' })
+                return true
+            }
+
             return false
         }
         for (const box of boxs) {

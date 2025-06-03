@@ -2,8 +2,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb0gjm0j",
         "type": "shape_square",
-        "x": 2800,
-        "y": 1232,
+        "x": 1551.6541145868487,
+        "y": 1153.9783821616784,
         "status": "success",
         "width": 1024,
         "height": 1024,
@@ -59,24 +59,6 @@ export const mockElements = [
         "title": "智能画板",
         "elements": [
             {
-                "id": "element-shape_square-mb0gkcjg",
-                "type": "shape_square",
-                "x": 464.7611969348318,
-                "y": 394.0577490667804,
-                "status": "success",
-                "width": 1024,
-                "height": 1024,
-                "scaleX": 1,
-                "scaleY": 1,
-                "rotation": 0,
-                "data": {
-                    "shape": "square",
-                    "backgroundColor": "rgba(250, 160, 241, 1)",
-                    "width": 1024,
-                    "height": 1024
-                }
-            },
-            {
                 "id": "element-shape_square-mb6ll8rs",
                 "type": "shape_square",
                 "x": 1717.6142796708855,
@@ -93,15 +75,33 @@ export const mockElements = [
                     "width": 1024,
                     "height": 1024
                 }
+            },
+            {
+                "id": "element-shape_square-mb0gkcjg",
+                "type": "shape_square",
+                "x": 503.7720058539917,
+                "y": 394.05774906677993,
+                "status": "success",
+                "width": 1024,
+                "height": 1024,
+                "scaleX": 1,
+                "scaleY": 1,
+                "rotation": 0,
+                "data": {
+                    "shape": "square",
+                    "backgroundColor": "rgba(250, 160, 241, 1)",
+                    "width": 1024,
+                    "height": 1024
+                }
             }
         ],
-        "unitId": "unit-frame-mb6ll5a2"
+        "unitId": "unit-frame-mbezyd3g"
     },
     {
         "id": "element-shape_square-mb37a2mt",
         "type": "shape_square",
-        "x": 3311.9779297206865,
-        "y": 1677.5252233835665,
+        "x": 2176.52169358324,
+        "y": 1666.0114566031898,
         "status": "success",
         "width": 1024,
         "height": 1024,
@@ -118,8 +118,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb37aci3",
         "type": "shape_square",
-        "x": 2046.4379011226017,
-        "y": 4525.828325474591,
+        "x": 2152.2104490795646,
+        "y": 4545.254645263861,
         "status": "success",
         "width": 1893.2412813734543,
         "height": 1023,
@@ -136,8 +136,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb37aqgg",
         "type": "shape_square",
-        "x": 4477.712876333575,
-        "y": 5144.580200263822,
+        "x": 4553.264696302835,
+        "y": 5159.690564257674,
         "status": "success",
         "width": 1023.999999999987,
         "height": 1022,
@@ -154,8 +154,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb37asms",
         "type": "shape_square",
-        "x": 6476.707933587144,
-        "y": 5087.484281150542,
+        "x": 6831.658844032567,
+        "y": 5159.703761156923,
         "status": "success",
         "width": 1023.999999999989,
         "height": 1022,
@@ -172,8 +172,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb37b5p2",
         "type": "shape_square",
-        "x": 2250.070078487932,
-        "y": 7144.546990127635,
+        "x": 2219.849350500228,
+        "y": 7259.529329479484,
         "status": "success",
         "width": 1023.9999999999865,
         "height": 1022,
@@ -190,8 +190,8 @@ export const mockElements = [
     {
         "id": "element-shape_square-mb37b5p3",
         "type": "shape_square",
-        "x": 3962.834526860792,
-        "y": 8370.291064634857,
+        "x": 4142.024555872884,
+        "y": 8446.37646933265,
         "status": "success",
         "width": 1784.3194708266312,
         "height": 1020,
@@ -262,8 +262,8 @@ export const mockElements = [
     {
         "id": "element-image-mb6aiqr5",
         "type": "image",
-        "x": 8791.852203648357,
-        "y": 2697.770554723468,
+        "x": 8791.879467474768,
+        "y": 3386.870468101687,
         "status": "success",
         "width": 564,
         "height": 700,
@@ -289,7 +289,7 @@ export const mockElements = [
         "exposure": 0,
         "temperature": 0,
         "contrast": 0,
-        "unitId": "unit-generator-mb6am0ww"
+        "unitId": "unit-generator-mb7k5l9g"
     },
     {
         "id": "element-shape_square-mb6b860h",
@@ -344,5 +344,85 @@ export const mockElements = [
             "width": 1024,
             "height": 1024
         }
+    },
+    {
+        "id": "element-shape_square-mb7zyp2p",
+        "type": "shape_square",
+        "x": -579.8760961537156,
+        "y": 9605.739535985314,
+        "status": "success",
+        "width": 1024,
+        "height": 1024,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "data": {
+            "shape": "square",
+            "backgroundColor": "#969696",
+            "width": 1024,
+            "height": 1024
+        }
+    },
+    {
+        "id": "element-frame-mbezyh9d",
+        "type": "frame",
+        "x": 6759.054821640019,
+        "y": -1173.229609211784,
+        "status": "success",
+        "width": 3328,
+        "height": 3065,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "data": {
+            "baseType": 19,
+            "presetBaseModelId": "base_checkpoint",
+            "prompt": "",
+            "presetNegativePrompts": "",
+            "loraModels": [],
+            "width": 3328,
+            "height": 3065,
+            "colorControl": {
+                "colorPalette": []
+            },
+            "checkpoint": null,
+            "generateEffect": 1,
+            "count": 1,
+            "hiresOptions": {
+                "enabled": false,
+                "scale": 1.5,
+                "upscaler": "16",
+                "strength": 0.5,
+                "steps": 20
+            },
+            "modelTrialCount": 102,
+            "colorReferenceImg": null,
+            "loraModelsTrialCount": [],
+            "cfgScale": 3.5,
+            "clipSkip": 2
+        },
+        "fill": "rgba(237, 255, 238, 1)",
+        "title": "智能画板",
+        "elements": [
+            {
+                "id": "element-shape_square-mbezyh9c",
+                "type": "shape_square",
+                "x": 1973.5464722430634,
+                "y": 279.52986856892994,
+                "status": "success",
+                "width": 1024,
+                "height": 1024,
+                "scaleX": 1,
+                "scaleY": 1,
+                "rotation": 0,
+                "data": {
+                    "shape": "square",
+                    "backgroundColor": "rgba(42, 39, 204, 1)",
+                    "width": 1024,
+                    "height": 1024
+                }
+            }
+        ],
+        "unitId": "unit-frame-mbfzcfim"
     }
 ]
