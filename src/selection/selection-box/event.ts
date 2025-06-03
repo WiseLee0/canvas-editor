@@ -37,7 +37,7 @@ export const useSelectionBoxEvent = () => {
             mouseRef.current.stageX = pos.x
             mouseRef.current.stageY = pos.y
             mouseRef.current.hotId = hotId
-            setSelectionBoxState({ isDragging: true })
+            setSelectionBoxState({ isTransforming: true })
         }
 
         const handleMouseMove = () => {
@@ -72,7 +72,7 @@ export const useSelectionBoxEvent = () => {
             mouseRef.current.isDown = false
             mouseRef.current.isEnoughMove = false
             mouseRef.current.hotId = ''
-            setSelectionBoxState({ isDragging: false })
+            setSelectionBoxState({ isTransforming: false })
         }
 
         stage.on('mousedown', handleMouseDown)

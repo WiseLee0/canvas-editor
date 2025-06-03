@@ -17,8 +17,9 @@ interface ExtendedSelectionBoxState extends Omit<SelectionBoxState, 'nodes'> {
   nodes: ExtendedNode[];       // 渲染外框数据
   innerNodes: ExtendedNode[];  // 渲染内框数据
   config: SelectionBoxConfig[];    // 元素选框，配置文件
-  isDragging: boolean; // 是否拖拽中
+  isTransforming: boolean; // 是否拖拽边框 & 锚点中
   dragNodeId: string;  // 拖拽的节点id
+  isDragging: boolean; // 是否拖拽节点
 }
 
 export const _selectionBoxState = createWithEqualityFn<ExtendedSelectionBoxState>()(() => ({
@@ -26,8 +27,9 @@ export const _selectionBoxState = createWithEqualityFn<ExtendedSelectionBoxState
   nodes: [],
   innerNodes: [],
   config: selectionBoxConfig,
-  isDragging: false,
+  isTransforming: false,
   dragNodeId: '',
+  isDragging: false,
 }));
 
 export const clearSelectionNodes = () => {

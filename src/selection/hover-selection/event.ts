@@ -60,13 +60,13 @@ export const useHoverSelectionRectEvent = () => {
     const getHoverNode = (isShiftKey: boolean = false) => {
         const pos = stage.getRelativePointerPosition()
         const ghostNode = getGhostSelectionRectState('node')
-        const isDragging = getSelectionBoxState('isDragging')
+        const isTransforming = getSelectionBoxState('isTransforming')
         const selectionBox = getSelectionBoxState('nodes')
         // 存在框选节点，或者正在拖拽，或者没有鼠标位置，则不进行Hover
-        if (!isDragging) {
+        if (!isTransforming) {
             stage.content.style.cursor = mouseRef.current.preCursor
         }
-        if (!pos || ghostNode || isDragging) {
+        if (!pos || ghostNode || isTransforming) {
             setHoverSelectionState({ node: null })
             return
         }

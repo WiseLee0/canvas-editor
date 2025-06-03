@@ -3,9 +3,11 @@ import { Circle, Group, Rect, Text } from 'react-konva';
 import { useProjectState } from '@/store';
 import { useEffect, useRef, useState } from 'react';
 export function SelectionBoxRects() {
+  const isDragging = useSelectionBoxState('isDragging');
   const nodes = useSelectionBoxState('nodes');
   const innerNodes = useSelectionBoxState('innerNodes');
   const scale = useProjectState('viewport').scale;
+  if (isDragging) return null;
 
   const renderOuterNode = () => {
     const nodeAnchor = (node: any) => [

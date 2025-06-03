@@ -1,5 +1,5 @@
 import { canvasEvents } from "@/helpers/canvas-events";
-import { changeSelectionRender, elementUpdater, getPointerAbosultePos, getPointerForFrameId, getSelectionBoxState, getSelectionState, useGhostSelectionRectEvent, useHoverSelectionRectEvent, useSelectionBoxEvent } from "..";
+import { changeSelectionRender, elementUpdater, getPointerAbosultePos, getPointerForFrameId, getSelectionBoxState, getSelectionState, setSelectionBoxState, useGhostSelectionRectEvent, useHoverSelectionRectEvent, useSelectionBoxEvent } from "..";
 import { useEffect, useRef } from "react";
 import _ from "lodash";
 import { getElementById, getProjectState, setProjectState } from "@/store";
@@ -25,12 +25,14 @@ export const useSelectionEvent = () => {
       const pos = getSelectionState('stage')?.getRelativePointerPosition()
       mouseRef.current.stageX = pos?.x || 0
       mouseRef.current.stageY = pos?.y || 0
+      setSelectionBoxState({ isDragging: false })
     })
     canvasEvents.on('selection:dragMove', (event: MouseEvent) => {
       const frameId = getPointerForFrameId()
       const stage = getSelectionState('stage')
       const pos = getPointerAbosultePos(stage, event)
       if (!pos) return;
+      if (!getSelectionBoxState('isDragging')) setSelectionBoxState({ isDragging: true })
       const dx = pos.x - mouseRef.current.stageX
       const dy = pos.y - mouseRef.current.stageY
       if (frameId !== mouseRef.current.frameId) {
@@ -48,12 +50,16 @@ export const useSelectionEvent = () => {
       }
       handleMoveElement(dx, dy)
     })
+    canvasEvents.on('selection:dragEnd', () => {
+      setTimeout(() => {
+        setSelectionBoxState({ isDragging: false })
+      }, 0);
+    })
   }, [])
 
   const handleMoveElement = (dx: number, dy: number) => {
     const oldElements = mouseRef.current.oldElements
     const boxs = getSelectionBoxState('nodes')
-
     // 使用统一的元素更新管理器
     elementUpdater.batchUpdatePositions(boxs, oldElements, dx, dy)
   }
