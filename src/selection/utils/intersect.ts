@@ -2,12 +2,12 @@ import { Node } from '../types/geometry'
 
 // 判断两个矩形节点是否相交
 export function hitTestRectNodes(node1: Node, node2: Node): boolean {
-    if (node1.rotation === 0 && node2.rotation === 0) {
+    if (!node1.rotation && !node2.rotation) {
         // 如果两个矩形都没有旋转
         return hitTestRectangle(node1, node2);
-    } else if (node1.rotation === 0 || node2.rotation === 0) {
+    } else if (!node1.rotation || !node2.rotation) {
         // 如果一个矩形有旋转，另一个没有
-        if (node1.rotation === 0) {
+        if (!node1.rotation) {
             return hitTestRectangleAndRotatedRectangle(node1, node2);
         } else {
             return hitTestRectangleAndRotatedRectangle(node2, node1);

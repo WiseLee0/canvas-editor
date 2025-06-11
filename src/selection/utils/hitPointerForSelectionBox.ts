@@ -1,8 +1,9 @@
 import { getSelectionState } from "../core"
 import { getSelectionBoxState } from "../selection-box"
-import { getTransform, isPointInRect } from "./index"
+import { getTransform, isPointInRect, syncSelectionBox } from "./index"
 
 export const hitPointerForSelectionBox = () => {
+    syncSelectionBox()
     const boxs = getSelectionBoxState('nodes')
     const stage = getSelectionState('stage')!
     const pointer = stage.getRelativePointerPosition()

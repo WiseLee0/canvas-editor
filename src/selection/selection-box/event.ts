@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { getProjectState, useProjectState, getElementById } from "@/store"
-import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState, getAbsoluteTrElementsByIds } from ".."
+import { elementUpdater, getCursor, getHoverSelectionState, getPointsBoundingBox, getRotatedRectangleCorners, getTransform, transformRenderNode, clearSelectionNodes, getSelectionBoxConfig, getSelectionBoxState, setSelectionBoxState, useSelectionBoxState, getSelectionState, useSelectionState, getAbsoluteTrElementsByIds, syncSelectionBox } from ".."
 import _ from "lodash"
 import { Transform } from "konva/lib/Util"
 
@@ -86,19 +86,21 @@ export const useSelectionBoxEvent = () => {
     }, [stage])
 
     useEffect(() => {
-        if (!selection.length) {
-            clearSelectionNodes()
-            return
+        let animationFrameId: number;
+        const run = () => {
+            if (!selection.length) {
+                cancelAnimationFrame(animationFrameId)
+                clearSelectionNodes()
+                return
+            }
+            syncSelectionBox()
+            animationFrameId = requestAnimationFrame(run)
         }
-        const elements = getProjectState('elements')
-        // 获取选中的Nodes
-        const nodes = getSelectionNodes(selection, elements) as any[]
-        // 扁平化Nodes
-        const flatNodes = splitFrameLevelNodes(nodes)
-        // 合并Nodes
-        const boxs = mergeToBoxs(flatNodes) as any[]
-        setSelectionBoxState({ nodes: boxs, innerNodes: nodes })
-    }, [selection, renderDep])
+        animationFrameId = requestAnimationFrame(run)
+        return () => {
+            cancelAnimationFrame(animationFrameId)
+        }
+    }, [selection])
 
     const handleOneResize = () => {
         const element = mouseRef.current.elements[0];
@@ -578,99 +580,4 @@ export const useSelectionBoxEvent = () => {
         // 多个元素进行调整
         handleMultipleResize()
     }
-}
-
-const getSelectionNodes = (selection: string[], elements: any[]) => {
-    const node = []
-    for (const element of elements) {
-        if (selection.includes(element.id)) {
-            node.push(transformRenderNode(element))
-        }
-        if (element?.elements) {
-            const nodes = getSelectionNodes(selection, element.elements) as any[];
-            if (nodes.length) {
-                if (element.type === 'frame') {
-                    nodes.forEach(item => {
-                        item.x = item.x + element.x
-                        item.y = item.y + element.y
-                        item.__parentFrameId = element.id
-                    })
-                }
-                node.push(...nodes)
-            }
-        }
-    }
-    return node
-}
-
-const splitFrameLevelNodes = (nodes: any) => {
-    const result = {
-        'elements': [],
-    } as any
-    for (const node of nodes) {
-        if (!node.__parentFrameId) {
-            result['elements'].push(node)
-        } else {
-            if (!result[node.__parentFrameId]) {
-                result[node.__parentFrameId] = []
-            }
-            result[node.__parentFrameId].push(node)
-        }
-    }
-
-    return Object.values(result).filter((item: any) => item?.length) as any[][]
-}
-
-const mergeToBoxs = (nodesArr: any[][]) => {
-    // 如果只有一个元素被选中，则不合并
-    if (nodesArr.length === 1 && nodesArr[0].length === 1) {
-        const node = nodesArr[0][0]
-        const frames = {} as any
-        if (node.__parentFrameId) {
-            frames[node.id] = node.__parentFrameId
-        }
-        return [{
-            id: 'box-0',
-            selection: [node.id],
-            frames,
-            x: node.x,
-            y: node.y,
-            width: node.width,
-            height: node.height,
-            rotation: node.rotation
-        }];
-    }
-    // 如果多个元素被选中，则合并
-    const newNodes = []
-    for (const nodes of nodesArr) {
-        const selection = []
-        const frames = {} as any
-        const points: { x: number, y: number }[] = []
-        for (const node of nodes) {
-            selection.push(node.id)
-            if (node.__parentFrameId) {
-                frames[node.id] = node.__parentFrameId
-            }
-            if (node.rotation === 0) {
-                points.push({ x: node.x, y: node.y })
-                points.push({ x: node.x + node.width, y: node.y })
-                points.push({ x: node.x, y: node.y + node.height })
-                points.push({ x: node.x + node.width, y: node.y + node.height })
-            } else {
-                points.push(...getRotatedRectangleCorners(node))
-            }
-        }
-        const box = getPointsBoundingBox(points)
-        newNodes.push({
-            id: `box-${newNodes.length}`,
-            selection,
-            frames,
-            x: box[0],
-            y: box[1],
-            width: box[2],
-            height: box[3],
-            rotation: 0
-        })
-    }
-    return newNodes
 }
