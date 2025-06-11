@@ -1,7 +1,7 @@
 import { createWithEqualityFn } from "zustand/traditional";
 import { createStoreUtils } from "./utils/createStoreUtils";
 import { mockElements } from "./mock";
-import { canvasEvents } from "@/helpers/canvas-events";
+import { events } from "@/events";
 
 interface Element {
     id: string
@@ -75,6 +75,8 @@ export const updateElement = (id: string, changes: Partial<Element>) => {
     const element = getElementById(id)
     if (element) {
         Object.assign(element, changes)
-        canvasEvents.emit('selection:update')
+        events.emitSync('selection:update', {
+            selectedIds: getProjectState('selection')
+        })
     }
 }

@@ -7,7 +7,6 @@ import { Transform } from "konva/lib/Util"
 export const useSelectionBoxEvent = () => {
     const stage = useSelectionState('stage')
     const selection = useProjectState('selection')
-    const renderDep = useSelectionBoxState('renderDep')
     const mouseRef = useRef({
         isDown: false,
         stageX: 0,

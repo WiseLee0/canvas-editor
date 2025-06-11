@@ -5,9 +5,9 @@ import { useEffect, useRef } from "react";
 import Konva from "konva";
 import { getProjectState, setProjectState, useProjectState } from "@/store";
 import { useSelectionEvent, changeSelectionRender, SelectionRender, setSelectionState } from "./selection";
-import { canvasEvents } from "@/helpers/canvas-events";
 import { clearSelection } from "@/helpers/canvas";
 import { useSelectionDragEvent } from "./drag";
+import { events } from "@/events";
 
 function App() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -99,9 +99,14 @@ function App() {
         getProjectState
       }
     }
-    canvasEvents.on('stage:clickBackground', () => {
+    
+    const unsubscribe = events.on('stage:clickBackground', () => {
       clearSelection()
     })
+
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   useSelectionEvent()

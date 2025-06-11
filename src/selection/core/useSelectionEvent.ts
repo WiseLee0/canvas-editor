@@ -1,4 +1,4 @@
-import { canvasEvents } from "@/helpers/canvas-events";
+import { events } from "@/events";
 import { changeSelectionRender, elementUpdater, getPointerAbosultePos, getPointerForFrameId, getSelectionBoxState, getSelectionState, setSelectionBoxState, useGhostSelectionRectEvent, useHoverSelectionRectEvent, useSelectionBoxEvent } from "..";
 import { useEffect, useRef } from "react";
 import _ from "lodash";
@@ -16,22 +16,22 @@ export const useSelectionEvent = () => {
   useGhostSelectionRectEvent()
 
   useEffect(() => {
-    canvasEvents.on('selection:update', () => {
+    const unsubscribeUpdate = events.on('selection:update', () => {
       changeSelectionRender()
     })
-    canvasEvents.on('selection:dragStart', () => {
+    
+    const unsubscribeDragStart = events.on('drag:start', (event) => {
       mouseRef.current.oldElements = _.cloneDeep(getProjectState('elements'))
       mouseRef.current.frameId = getPointerForFrameId()
-      const pos = getSelectionState('stage')?.getRelativePointerPosition()
-      mouseRef.current.stageX = pos?.x || 0
-      mouseRef.current.stageY = pos?.y || 0
+      mouseRef.current.stageX = event.startPosition.x
+      mouseRef.current.stageY = event.startPosition.y
       setSelectionBoxState({ isDragging: false })
     })
-    canvasEvents.on('selection:dragMove', (event: MouseEvent) => {
+    
+    const unsubscribeDragMove = events.on('drag:move', (event) => {
       const frameId = getPointerForFrameId()
       const stage = getSelectionState('stage')
-      const pos = getPointerAbosultePos(stage, event)
-      if (!pos) return;
+      const pos = { x: event.currentPosition.x, y: event.currentPosition.y }
       if (!getSelectionBoxState('isDragging')) setSelectionBoxState({ isDragging: true })
       const dx = pos.x - mouseRef.current.stageX
       const dy = pos.y - mouseRef.current.stageY
@@ -50,11 +50,19 @@ export const useSelectionEvent = () => {
       }
       handleMoveElement(dx, dy)
     })
-    canvasEvents.on('selection:dragEnd', () => {
+    
+    const unsubscribeDragEnd = events.on('drag:end', () => {
       setTimeout(() => {
         setSelectionBoxState({ isDragging: false })
       }, 0);
     })
+
+    return () => {
+      unsubscribeUpdate()
+      unsubscribeDragStart()
+      unsubscribeDragMove() 
+      unsubscribeDragEnd()
+    }
   }, [])
 
   const handleMoveElement = (dx: number, dy: number) => {

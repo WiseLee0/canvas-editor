@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react"
 import { getProjectState, setProjectState } from "@/store"
 import { getCursor, getGhostSelectionRectState, getHoverSelectionState, setHoverSelectionState, getSelectionBoxState, setSelectionBoxState, getPointerForElement, getTransform, hitPointerForSelectionBox, hitTestRectNodes, isPointInRect, useSelectionState, getSelectionState, disableHoverConfig } from ".."
 import Konva from "konva"
-import { canvasEvents } from "@/helpers/canvas-events"
+import { events } from "@/events"
+
 export const useHoverSelectionRectEvent = () => {
     const stage = useSelectionState('stage')!
     const mouseRef = useRef({
@@ -136,7 +137,9 @@ export const useHoverSelectionRectEvent = () => {
         const pointerForElement = getPointerForElement()
         if (!pointerForElement) {
             if (isShiftKey) return
-            canvasEvents.emit('stage:clickBackground')
+            events.emitSync('stage:clickBackground', {
+                position: { x: 0, y: 0 }
+            })
             return;
         }
 
@@ -154,7 +157,9 @@ export const useHoverSelectionRectEvent = () => {
         // 选中框内部
         const pointerForElement = getPointerForElement()
         if (!pointerForElement && !mouseRef.current.isEnoughMove) {
-            canvasEvents.emit('stage:clickBackground')
+            events.emitSync('stage:clickBackground', {
+                position: { x: 0, y: 0 }
+            })
             return;
         }
         if (mouseRef.current.isEnoughMove) {
